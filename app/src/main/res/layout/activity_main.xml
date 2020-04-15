@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2020 Google LLC
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     https://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="dev.hadrosaur.vulkanphotobooth.MainActivity">
+
+    <!-- Note the visibility hack for permission dialog. Once permissions granted, make the surface visible -->
+   <SurfaceView
+           android:layout_width="0dp"
+           android:layout_height="0dp"
+           android:id="@+id/surface_mirror"
+           android:visibility="invisible"
+           app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent"
+           app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"/>
+
+   <androidx.constraintlayout.widget.Guideline android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                               android:id="@+id/guideline_horizontal"
+                                               android:orientation="horizontal"
+                                               app:layout_constraintGuide_percent="0.5"/>
+
+    <TextView
+            android:id="@+id/text_fps"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="fps: "
+            android:textAlignment="viewEnd"
+            android:textColor="#EC407A"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/surface_mirror" />
+
+    <TextView
+            android:id="@+id/text_render"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="render: "
+            android:textAlignment="viewEnd"
+            android:textColor="#EC407A"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_fps" />
+
+   <ImageView
+           android:id="@+id/button_shutter"
+           android:layout_width="60dp"
+           android:layout_height="60dp"
+           android:layout_margin="5dp"
+           android:adjustViewBounds="true"
+           android:clickable="true"
+           android:contentDescription="Shutter"
+           android:scaleType="centerCrop"
+           android:visibility="invisible"
+           app:layout_constraintBottom_toTopOf="@id/seek_input4"
+           app:layout_constraintEnd_toEndOf="@+id/surface_mirror"
+           app:srcCompat="@drawable/filter_button_enabled" />
+
+    <ImageView
+            android:id="@+id/image_countdown_background"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:adjustViewBounds="true"
+            android:clickable="true"
+            android:contentDescription="Shutter countdown background"
+            android:scaleType="centerCrop"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/surface_mirror"
+            app:layout_constraintEnd_toEndOf="@+id/surface_mirror"
+            app:layout_constraintStart_toStartOf="@+id/surface_mirror"
+            app:layout_constraintTop_toTopOf="@+id/surface_mirror"
+            app:srcCompat="@drawable/count_down_circle_background" />
+
+    <ImageView
+            android:id="@+id/image_countdown_text"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:adjustViewBounds="true"
+            android:clickable="true"
+            android:contentDescription="Shutter countdown"
+            android:padding="20dp"
+            android:scaleType="centerCrop"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/surface_mirror"
+            app:layout_constraintEnd_toEndOf="@+id/surface_mirror"
+            app:layout_constraintStart_toStartOf="@+id/surface_mirror"
+            app:layout_constraintTop_toTopOf="@+id/surface_mirror"
+            app:srcCompat="@drawable/digit_3_blue" />
+
+    <SeekBar
+            android:id="@+id/seek_input1"
+            android:layout_width="0dp"
+            android:layout_height="35dp"
+            android:layout_margin="8dp"
+            android:max="100"
+            android:minHeight="25dp"
+            android:progressDrawable="@drawable/slider_bar"
+            android:splitTrack="false"
+            android:thumb="@drawable/slider_control"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toTopOf="@id/seek_input2"
+            app:layout_constraintEnd_toStartOf="@id/seek_input4"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintWidth_max="@dimen/filter_slider_max_width" />
+
+    <SeekBar
+            android:id="@+id/seek_input2"
+            android:layout_width="0dp"
+            android:layout_height="35dp"
+            android:layout_margin="8dp"
+            android:max="100"
+            android:minHeight="25dp"
+            android:progressDrawable="@drawable/slider_bar"
+            android:splitTrack="false"
+            android:thumb="@drawable/slider_control"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toTopOf="@id/seek_input3"
+            app:layout_constraintEnd_toStartOf="@id/seek_input5"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintWidth_max="@dimen/filter_slider_max_width" />
+
+    <SeekBar
+            android:id="@+id/seek_input3"
+            android:layout_width="0dp"
+            android:layout_height="35dp"
+            android:layout_margin="8dp"
+            android:max="100"
+            android:minHeight="25dp"
+            android:progressDrawable="@drawable/slider_bar"
+            android:splitTrack="false"
+            android:thumb="@drawable/slider_control"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toStartOf="@id/seek_input6"
+            app:layout_constraintBottom_toTopOf="@id/button_filter_one"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintWidth_max="@dimen/filter_slider_max_width" />
+
+   <SeekBar
+           android:id="@+id/seek_input4"
+           android:layout_width="0dp"
+           android:layout_height="35dp"
+           android:layout_margin="8dp"
+           android:max="100"
+           android:minHeight="25dp"
+           android:progressDrawable="@drawable/slider_bar"
+           android:splitTrack="false"
+           android:thumb="@drawable/slider_control"
+           android:visibility="invisible"
+           app:layout_constraintBottom_toTopOf="@id/seek_input5"
+           app:layout_constraintEnd_toEndOf="@+id/button_shutter"
+           app:layout_constraintStart_toEndOf="@id/seek_input1"
+           app:layout_constraintWidth_max="@dimen/filter_slider_max_width" />
+
+   <SeekBar
+           android:id="@+id/seek_input5"
+           android:layout_width="0dp"
+           android:layout_height="35dp"
+           android:layout_margin="8dp"
+           android:max="100"
+           android:minHeight="25dp"
+           android:progressDrawable="@drawable/slider_bar"
+           android:splitTrack="false"
+           android:thumb="@drawable/slider_control"
+           android:visibility="invisible"
+           app:layout_constraintBottom_toTopOf="@id/seek_input6"
+           app:layout_constraintEnd_toEndOf="@+id/button_shutter"
+           app:layout_constraintHorizontal_bias="1.0"
+           app:layout_constraintStart_toEndOf="@+id/seek_input2"
+           app:layout_constraintWidth_max="@dimen/filter_slider_max_width" />
+
+   <SeekBar
+           android:id="@+id/seek_input6"
+           android:layout_width="0dp"
+           android:layout_height="35dp"
+           android:layout_margin="8dp"
+           android:max="100"
+           android:minHeight="25dp"
+           android:progressDrawable="@drawable/slider_bar"
+           android:splitTrack="false"
+           android:thumb="@drawable/slider_control"
+           android:visibility="invisible"
+           app:layout_constraintBottom_toTopOf="@id/button_filter_one"
+           app:layout_constraintEnd_toEndOf="@+id/button_shutter"
+           app:layout_constraintHorizontal_bias="1.0"
+           app:layout_constraintStart_toEndOf="@+id/seek_input3"
+           app:layout_constraintWidth_max="@dimen/filter_slider_max_width" />
+
+
+    <ImageView
+            android:id="@+id/button_filter_one"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:clickable="true"
+            android:contentDescription="Filter one"
+            android:padding="5dp"
+            android:scaleType="centerCrop"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@id/progress_gif"
+            app:layout_constraintEnd_toStartOf="@id/button_filter_two"
+            app:layout_constraintStart_toStartOf="@+id/seek_input1"
+            app:layout_constraintWidth_max="@dimen/filter_button_max_width"
+            app:srcCompat="@drawable/filter_button_disabled" />
+
+    <ImageView
+            android:id="@+id/button_filter_two"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:clickable="true"
+            android:contentDescription="Filter two"
+            android:padding="5dp"
+            android:scaleType="centerCrop"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/button_filter_three"
+            app:layout_constraintStart_toEndOf="@id/button_filter_one"
+            app:layout_constraintWidth_max="@dimen/filter_button_max_width"
+            app:srcCompat="@drawable/filter_button_disabled" />
+
+    <ImageView
+            android:id="@+id/button_filter_three"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:clickable="true"
+            android:contentDescription="Filter three"
+            android:padding="5dp"
+            android:scaleType="centerCrop"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/button_filter_four"
+            app:layout_constraintStart_toEndOf="@id/button_filter_two"
+            app:layout_constraintWidth_max="@dimen/filter_button_max_width"
+            app:srcCompat="@drawable/filter_button_disabled" />
+
+    <ImageView
+            android:id="@+id/button_filter_four"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:clickable="true"
+            android:contentDescription="Filter four"
+            android:padding="5dp"
+            android:scaleType="centerCrop"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/button_filter_five"
+            app:layout_constraintStart_toEndOf="@id/button_filter_three"
+            app:layout_constraintWidth_max="@dimen/filter_button_max_width"
+            app:srcCompat="@drawable/filter_button_disabled" />
+
+    <ImageView
+            android:id="@+id/button_filter_five"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:clickable="true"
+            android:contentDescription="Filter five"
+            android:padding="5dp"
+            android:scaleType="centerCrop"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/button_filter_six"
+            app:layout_constraintStart_toEndOf="@id/button_filter_four"
+            app:layout_constraintWidth_max="@dimen/filter_button_max_width"
+            app:srcCompat="@drawable/filter_button_disabled" />
+
+    <ImageView
+            android:id="@+id/button_filter_six"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:clickable="true"
+            android:contentDescription="Filter six"
+            android:padding="5dp"
+            android:scaleType="centerCrop"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/button_filter_seven"
+            app:layout_constraintStart_toEndOf="@id/button_filter_five"
+            app:layout_constraintWidth_max="@dimen/filter_button_max_width"
+            app:srcCompat="@drawable/filter_button_disabled" />
+
+    <ImageView
+            android:id="@+id/button_filter_seven"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:clickable="true"
+            android:contentDescription="Filter seven"
+            android:padding="5dp"
+            android:scaleType="centerCrop"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/button_filter_eight"
+            app:layout_constraintStart_toEndOf="@id/button_filter_six"
+            app:layout_constraintWidth_max="@dimen/filter_button_max_width"
+            app:srcCompat="@drawable/filter_button_disabled" />
+
+    <ImageView
+            android:id="@+id/button_filter_eight"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:clickable="true"
+            android:contentDescription="Filter eight"
+            android:padding="5dp"
+            android:scaleType="centerCrop"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/seek_input2"
+            app:layout_constraintStart_toEndOf="@id/button_filter_seven"
+            app:layout_constraintWidth_max="@dimen/filter_button_max_width"
+            app:srcCompat="@drawable/filter_button_disabled" />
+
+    <ImageView
+            android:id="@+id/button_filter_nine"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:clickable="true"
+            android:contentDescription="Filter nine"
+            android:padding="5dp"
+            android:scaleType="centerCrop"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/seek_input2"
+            app:layout_constraintStart_toEndOf="@id/button_filter_seven"
+            app:layout_constraintWidth_max="@dimen/filter_button_max_width"
+            app:srcCompat="@drawable/filter_button_disabled" />
+
+    <ImageView
+            android:id="@+id/button_filter_ten"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:clickable="true"
+            android:contentDescription="Filter ten"
+            android:padding="5dp"
+            android:scaleType="centerCrop"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/seek_input2"
+            app:layout_constraintStart_toEndOf="@id/button_filter_seven"
+            app:layout_constraintWidth_max="@dimen/filter_button_max_width"
+            app:srcCompat="@drawable/filter_button_disabled" />
+
+    <ProgressBar
+            android:id="@+id/progress_gif"
+            style="@style/HorizontalProgressBar"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="24dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

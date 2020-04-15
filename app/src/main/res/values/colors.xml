@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2020 Google LLC
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     https://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<resources>
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#D81B60</color>
+
+    <color name="filterButtonDisabledBorder">#BF970000</color>
+    <color name="filterButtonDisabled">#BFEF5350</color>
+    <color name="filterButtonDisabledRipple">#BFF10400</color>
+    <color name="filterButtonDisabledHover">#BFF10400</color>
+
+    <color name="filterButtonEnabledBorder">#BF0F4413</color>
+    <color name="filterButtonEnabled">#BF66BB6A</color>
+    <color name="filterButtonEnabledRipple">#BF00C00A</color>
+    <color name="filterButtonEnabledHover">#BF00C00A</color>
+
+    <color name="countdownBackgroundBorder">#003A05</color>
+    <color name="countdownBackground">#D2003A05</color>
+
+    <color name="sliderControlStart">#FF72F079</color>
+    <color name="sliderControlEnd">#FF005707</color>
+    <color name="sliderBarStart">#0BE41A</color>
+
+</resources>
