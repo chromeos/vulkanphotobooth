@@ -21,6 +21,9 @@ if(CMAKE_VERSION VERSION_LESS "3.7")
     )
 endif()
 
+file(GLOB glslc-folders ${ANDROID_NDK}/shader-tools/*)
+find_program(GLSLC glslc REQUIRED HINTS ${glslc-folders})
+
 function(__ru_add_spirv_join_paths result a b)
     string(REGEX MATCH "^/" has_root "${b}")
 
