@@ -187,7 +187,7 @@ Java_dev_hadrosaur_vulkanphotobooth_MainActivity_initializeNative(
     ImageReaderListener::native_draw_to_display = false;
     ImageReaderListener::vulkan_queue_empty = true;
 
-    ATrace_beginSection("FUNHOUSE: INITIALIZING VULKAN TEST");
+    ATrace_beginSection("VULKAN_PHOTOBOOTH: INITIALIZING VULKAN_PHOTOBOOTH TEST");
     NUM_DISPLAYS = (uint32_t ) jNumDisplays;
 
     if (!InitializeVulkan()) {

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef FUNHOUSE_PHOTO_BOOTH_VULKANSURFACE_H
-#define FUNHOUSE_PHOTO_BOOTH_VULKANSURFACE_H
+#ifndef VULKAN_PHOTO_BOOTH_VULKANSURFACE_H
+#define VULKAN_PHOTO_BOOTH_VULKANSURFACE_H
 
 
 #include <vulkan/vulkan.h>
@@ -45,4 +45,4 @@ public:
 };
 
 
-#endif //FUNHOUSE_PHOTO_BOOTH_VULKANSURFACE_H
+#endif //VULKAN_PHOTO_BOOTH_VULKANSURFACE_H

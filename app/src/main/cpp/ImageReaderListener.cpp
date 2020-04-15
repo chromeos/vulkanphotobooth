@@ -105,7 +105,7 @@ void ImageReaderListener::onImageAvailable(void* obj, AImageReader* reader) {
     //    logd("Image in, w: %d, h: %d", check_width, check_height);
 
     // Get the Android Hardware Buffer from the image
-    ATrace_beginSection("FUNHOUSE: Get AHB buffer.");
+    ATrace_beginSection("VULKAN_PHOTOBOOTH: Get AHB buffer.");
     AHardwareBuffer *ahb;
     ret = AImage_getHardwareBuffer(image, &ahb);
     if (ret)
@@ -113,7 +113,7 @@ void ImageReaderListener::onImageAvailable(void* obj, AImageReader* reader) {
     ATrace_endSection();
 
     // Set up the Vulkan AHB and connect the Android AHB to it
-    ATrace_beginSection("FUNHOUSE: vkAHB creation.");
+    ATrace_beginSection("VULKAN_PHOTOBOOTH: vkAHB creation.");
     // Import the AHardwareBuffer into Vulkan. NOTE: the vkAHB will be freed by the renderer
     auto vkAHB = new VulkanAHardwareBufferImage(mInstance);
     ASSERT_FORMATTED(vkAHB->init(ahb, true ),
@@ -122,7 +122,7 @@ void ImageReaderListener::onImageAvailable(void* obj, AImageReader* reader) {
 
     // The first time an image is received, create the render pipeline, afterward re-use the same pipeline
     if (!mRenderer->isPipelineInitialized) {
-        ATrace_beginSection("FUNHOUSE: Create Vulkan pipeline.");
+        ATrace_beginSection("VULKAN_PHOTOBOOTH: Create Vulkan pipeline.");
         //TODO: do something if assert fails and die.
         ASSERT_FORMATTED(mRenderer->createPipeline(vkAHB->sampler(), vkAHB->isSamplerImmutable()),
                          "creation of Render pipeline failed.");
@@ -131,7 +131,7 @@ void ImageReaderListener::onImageAvailable(void* obj, AImageReader* reader) {
 
     //      logd("About to render: %d", frame_count);
     // Send the image to the renderer so it will passed into the Vulkan pipeline for effects and display
-    ATrace_beginSection("FUNHOUSE: emilie renderImageAndReadback call from native-lib.");
+    ATrace_beginSection("VULKAN_PHOTOBOOTH: renderImageAndReadback call from native-lib.");
 
     // Only copy out every 12th frame, and only if a gif is not currently being encoded
     // if ringbuf_data is null, no copy will be made in renderImageAndReadback.

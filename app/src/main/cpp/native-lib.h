@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef FUNHOUSE_PHOTO_BOOTH_NATIVE_LIB_H
-#define FUNHOUSE_PHOTO_BOOTH_NATIVE_LIB_H
+#ifndef VULKAN_PHOTO_BOOTH_NATIVE_LIB_H
+#define VULKAN_PHOTO_BOOTH_NATIVE_LIB_H
 
 #include <jni.h>
 #include "third_party/androidndkgif/GCTGifEncoder.h"
@@ -127,4 +127,4 @@ Java_dev_hadrosaur_vulkanphotobooth_MainActivity_createGif(
 extern "C" JNIEXPORT void JNICALL
 Java_dev_hadrosaur_vulkanphotobooth_MainActivity_encodeAndSaveGif(JNIEnv* env, jobject);
 
-#endif //FUNHOUSE_PHOTO_BOOTH_NATIVE_LIB_H
+#endif //VULKAN_PHOTO_BOOTH_NATIVE_LIB_H

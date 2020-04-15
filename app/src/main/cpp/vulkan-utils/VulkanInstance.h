@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef FUNHOUSE_PHOTO_BOOTH_VULKANINSTANCE_H
-#define FUNHOUSE_PHOTO_BOOTH_VULKANINSTANCE_H
+#ifndef VULKAN_PHOTO_BOOTH_VULKANINSTANCE_H
+#define VULKAN_PHOTO_BOOTH_VULKANINSTANCE_H
 
 
 #include <vulkan/vulkan.h>
@@ -71,4 +71,4 @@ class VulkanInstance {
 };
 
 
-#endif //FUNHOUSE_PHOTO_BOOTH_VULKANINSTANCE_H
+#endif //VULKAN_PHOTO_BOOTH_VULKANINSTANCE_H

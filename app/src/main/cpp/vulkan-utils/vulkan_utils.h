@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef FUNHOUSE_PHOTO_BOOTH_VULKAN_UTILS_H
-#define FUNHOUSE_PHOTO_BOOTH_VULKAN_UTILS_H
+#ifndef VULKAN_PHOTO_BOOTH_VULKAN_UTILS_H
+#define VULKAN_PHOTO_BOOTH_VULKAN_UTILS_H
 
 #include <android/log.h>
 #include <vulkan/vulkan_core.h>
@@ -147,4 +147,4 @@ void addImageTransitionBarrier(VkCommandBuffer commandBuffer, VkImage image,
 
 #define ALIGN(x, mask) ( ((x) + (mask) - 1) & ~((mask) - 1) )
 
-#endif //FUNHOUSE_PHOTO_BOOTH_VULKAN_UTILS_H
+#endif //VULKAN_PHOTO_BOOTH_VULKAN_UTILS_H

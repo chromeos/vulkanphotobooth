@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef FUNHOUSE_PHOTO_BOOTH_VULKANSWAPCHAIN_H
-#define FUNHOUSE_PHOTO_BOOTH_VULKANSWAPCHAIN_H
+#ifndef VULKAN_PHOTO_BOOTH_VULKANSWAPCHAIN_H
+#define VULKAN_PHOTO_BOOTH_VULKANSWAPCHAIN_H
 
 #include <vulkan/vulkan.h>
 #include <media/NdkImage.h>
@@ -130,4 +130,4 @@ public:
     uint32_t mSwapchainFenceIndex = 0;
 };
 
-#endif //FUNHOUSE_PHOTO_BOOTH_VULKANSWAPCHAIN_H
+#endif //VULKAN_PHOTO_BOOTH_VULKANSWAPCHAIN_H

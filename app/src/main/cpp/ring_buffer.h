@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef FUNHOUSE_PHOTO_BOOTH_RING_BUFFER_H
-#define FUNHOUSE_PHOTO_BOOTH_RING_BUFFER_H
+#ifndef VULKAN_PHOTO_BOOTH_RING_BUFFER_H
+#define VULKAN_PHOTO_BOOTH_RING_BUFFER_H
 
 #include <cstdlib>
 #include <memory>
@@ -88,4 +88,4 @@ private:
         size_t tail = 0;
 };
 
-#endif //FUNHOUSE_PHOTO_BOOTH_RING_BUFFER_H
+#endif //VULKAN_PHOTO_BOOTH_RING_BUFFER_H

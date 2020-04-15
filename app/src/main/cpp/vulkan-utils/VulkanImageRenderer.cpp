@@ -618,7 +618,7 @@ double VulkanImageRenderer::renderImageAndReadback(VulkanAHardwareBufferImage *n
 
 
     // Render image to all surfaces
-    ATrace_beginSection("FUNHOUSE: render wait for fences");
+    ATrace_beginSection("VULKAN_PHOTOBOOTH: render wait for fences");
     for (int surface_i = 0; surface_i < VULKAN_RENDERER_NUM_DISPLAYS; surface_i++) {
 
         // Grab the next swapchain image for each surface, wait for them to be done presenting
@@ -627,7 +627,7 @@ double VulkanImageRenderer::renderImageAndReadback(VulkanAHardwareBufferImage *n
         VK_CALL(vkResetFences(mInstance->device(), 1,
                               &mSwapchains[surface_i].mSwapchainFences[mSwapchains[surface_i].mSwapchainFenceIndex]));
 
-        ATrace_beginSection("FUNHOUSE: render acquire next image KHR");
+        ATrace_beginSection("VULKAN_PHOTOBOOTH: render acquire next image KHR");
 
         VK_CALL(vkAcquireNextImageKHR(mInstance->device(), mSwapchains[surface_i].mVkSwapchain,
                 /*timeout*/ UINT64_MAX,
@@ -635,7 +635,7 @@ double VulkanImageRenderer::renderImageAndReadback(VulkanAHardwareBufferImage *n
                 mSwapchains[surface_i].mSwapchainFences[mSwapchains[surface_i].mSwapchainFenceIndex],
                 &mSwapchains[surface_i].mSwapchainIndex));
         ATrace_endSection();
-        ATrace_beginSection("FUNHOUSE: render wait for present fences...");
+        ATrace_beginSection("VULKAN_PHOTOBOOTH: render wait for present fences...");
 
         // TODO: performance: get a semaphore here instead and pass it into VkQueueSubmit
 
@@ -663,7 +663,7 @@ double VulkanImageRenderer::renderImageAndReadback(VulkanAHardwareBufferImage *n
      * Adapted from: https://github.com/SaschaWillems/Vulkan/blob/master/examples/screenshot/screenshot.cpp#L230
      */
     if (nullptr != image_copy_data) {
-        ATrace_beginSection("FUNHOUSE: copy out frame for animated gif buffer");
+        ATrace_beginSection("VULKAN_PHOTOBOOTH: copy out frame for animated gif buffer");
         SwapchainImage *swapchainImage = &mSwapchains[0].mSwapchainImages[mSwapchains[0].mSwapchainIndex];
 
         /*
@@ -801,7 +801,7 @@ double VulkanImageRenderer::renderImageAndReadback(VulkanAHardwareBufferImage *n
      * Note: Only use the 1st swapchain or else there will be jiggling from out-of-order frames
      */
     if (filter_params->use_filter[BLUR_BUTTON]) {
-        ATrace_beginSection("FUNHOUSE: previous frame copy");
+        ATrace_beginSection("VULKAN_PHOTOBOOTH: previous frame copy");
 
         // TODO: add every monitor
         // Copy from the last rendered swapchain into this prev frame VkImage
@@ -905,7 +905,7 @@ double VulkanImageRenderer::renderImageAndReadback(VulkanAHardwareBufferImage *n
             logd("Rendering a non-0 surface...");
         }
 
-        ATrace_beginSection("FUNHOUSE: render delete old images");
+        ATrace_beginSection("VULKAN_PHOTOBOOTH: render delete old images");
         // Free up old AImage and vkAHB for this swapchain image
         // Each active surface depends on the same camera image/ahb, free them when the last surface is done with it.
         if (surface_i >= (VULKAN_RENDERER_NUM_DISPLAYS - 1)) {
@@ -922,7 +922,7 @@ double VulkanImageRenderer::renderImageAndReadback(VulkanAHardwareBufferImage *n
         render_state = RENDER_FRAME_SENT;
         ATrace_endSection();
 
-        ATrace_beginSection("FUNHOUSE: render create descriptor sets");
+        ATrace_beginSection("VULKAN_PHOTOBOOTH: render create descriptor sets");
         {
     //        logd("Time value: %" PRIu64, time_value);
             // Update descriptor set with the ShaderVars uniform buffer
@@ -1046,7 +1046,7 @@ double VulkanImageRenderer::renderImageAndReadback(VulkanAHardwareBufferImage *n
         ATrace_endSection();
 
 
-        ATrace_beginSection("FUNHOUSE: render begin command buffer");
+        ATrace_beginSection("VULKAN_PHOTOBOOTH: render begin command buffer");
 
         // Begin Command Buffer (separate buffer for each surface
         {
@@ -1062,7 +1062,7 @@ double VulkanImageRenderer::renderImageAndReadback(VulkanAHardwareBufferImage *n
 
         ATrace_endSection();
 
-        ATrace_beginSection("FUNHOUSE: render transistion barriers");
+        ATrace_beginSection("VULKAN_PHOTOBOOTH: render transistion barriers");
 
         // Acquire the AHB image resource so it can be sampled from
         addImageTransitionBarrier(
@@ -1092,7 +1092,7 @@ double VulkanImageRenderer::renderImageAndReadback(VulkanAHardwareBufferImage *n
 
 
         ATrace_endSection();
-        ATrace_beginSection("FUNHOUSE: render Render pass");
+        ATrace_beginSection("VULKAN_PHOTOBOOTH: render Render pass");
 
         // Begin Render Pass to draw the source resource to the framebuffer.
         {
@@ -1117,7 +1117,7 @@ double VulkanImageRenderer::renderImageAndReadback(VulkanAHardwareBufferImage *n
 
         }
         ATrace_endSection();
-        ATrace_beginSection("FUNHOUSE: render draw textures");
+        ATrace_beginSection("VULKAN_PHOTOBOOTH: render draw textures");
 
 //        logd("surface: %d, sets size: %u, swapchain index: %d", surface_i, (int) mDescriptorSets[surface_i].size(), mSwapchains[surface_i].mSwapchainIndex);
 
@@ -1133,7 +1133,7 @@ double VulkanImageRenderer::renderImageAndReadback(VulkanAHardwareBufferImage *n
         vkCmdEndRenderPass(swapchainImage->cmdBuffer);
 
         ATrace_endSection();
-        ATrace_beginSection("FUNHOUSE: render queue swapchain");
+        ATrace_beginSection("VULKAN_PHOTOBOOTH: render queue swapchain");
 
         // Finished reading the AHB
         addImageTransitionBarrier(
@@ -1161,7 +1161,7 @@ double VulkanImageRenderer::renderImageAndReadback(VulkanAHardwareBufferImage *n
                 VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
                 VK_QUEUE_FAMILY_EXTERNAL_KHR, mInstance->queueFamilyIndex());
 
-        ATrace_beginSection("FUNHOUSE: render end buffer");
+        ATrace_beginSection("VULKAN_PHOTOBOOTH: render end buffer");
         VK_CALL(vkEndCommandBuffer(swapchainImage->cmdBuffer));
         ATrace_endSection();
 
