@@ -40,7 +40,7 @@ import android.widget.SeekBar
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import kotlinx.android.synthetic.main.activity_main.*
@@ -138,7 +138,7 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
 
         // Restart the preview stream
         // Note, if camera is not open or preview is already running, this will simply return
-        vulkanViewModel = ViewModelProviders.of(this).get(VulkanViewModel::class.java)
+        vulkanViewModel = ViewModelProvider(this).get(VulkanViewModel::class.java)
         allCameraParams = vulkanViewModel.getAllCameraParams()
         camera2StartPreview(this, cameraParams)
         updateFilterParams()
@@ -265,7 +265,7 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_main)
-        vulkanViewModel = ViewModelProviders.of(this).get(VulkanViewModel::class.java)
+        vulkanViewModel = ViewModelProvider(this).get(VulkanViewModel::class.java)
         allCameraParams = vulkanViewModel.getAllCameraParams()
 
         gifSpinner = CircularProgressDrawable(this)
