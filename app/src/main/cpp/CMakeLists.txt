@@ -138,7 +138,8 @@ target_include_directories(native-lib PUBLIC
         ${CMAKE_SOURCE_DIR}/data
         ${GLMINC_PREFIX}
         ${SHADERC_SRC}/third_party/spirv-tools/include
-        ${SHADERC_SRC}/third_party/spirv-tools/include/spirv-tools)
+        ${SHADERC_SRC}/third_party/spirv-tools/include/spirv-tools
+        )
 
 add_subdirectory(vulkan-utils)
 add_subdirectory(third_party/androidndkgif)

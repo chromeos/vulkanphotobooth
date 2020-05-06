@@ -24,7 +24,7 @@ include_directories(
 ru_add_spvnum(quad.vert.spvnum ../shaders/quad.vert.glsl)
 ru_add_spvnum(quad.frag.spvnum ../shaders/quad.frag.glsl)
 
-add_library(vulkan-utils STATIC
+add_library(vulkan-utils SHARED
         ../third_party/vulkan_debug/vulkan_debug.cpp
         vulkan_utils.h
         vulkan_utils.cpp
