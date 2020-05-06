@@ -19,7 +19,7 @@
 
 precision highp float;
 
-#include "filter_beeeye.glsl"
+#include "../third_party/filter_height_field/filter_height_field.glsl"
 #include "filter_drawing4.glsl"
 #include "../third_party/filter_shapes/filter_shapes.glsl"
 #include "filter_colour_blast.glsl"
@@ -89,17 +89,10 @@ layout(location=0) out vec4 color;
 
 void main() {
 
-    // Depth field
-    //if ((buffer_vals.shader_vars.use_filter & 0x01) != 0) { // 0b 0000 0001
-    //    if ((buffer_vals.shader_vars.use_filter & 0x02) == 0) { // Don't use if other sampling based filters are engaged
-    //        color = filterHeightField(sampler2d, tex_coord, float(buffer_vals.shader_vars.width), float(buffer_vals.shader_vars.height), buffer_vals.shader_vars.time_value, buffer_vals.shader_vars.seek_value1, buffer_vals.shader_vars.rotation);
-    //    }
-    //}
-
-    // Bee-eye
+    // Height field
     if ((buffer_vals.shader_vars.use_filter & 0x01) != 0) { // 0b 0000 0001
         if ((buffer_vals.shader_vars.use_filter & 0x02) == 0) { // Don't use if other sampling based filters are engaged
-            color = filterBeeEye(sampler2d, tex_coord, float(buffer_vals.shader_vars.width), float(buffer_vals.shader_vars.height), float(buffer_vals.shader_vars.seek_value1), false, float(buffer_vals.shader_vars.seek_value2));
+            color = filterHeightField(sampler2d, tex_coord, float(buffer_vals.shader_vars.width), float(buffer_vals.shader_vars.height), buffer_vals.shader_vars.time_value, buffer_vals.shader_vars.rotation, buffer_vals.shader_vars.seek_value1, buffer_vals.shader_vars.seek_value2, false);
         }
     }
 
@@ -108,8 +101,8 @@ void main() {
         if ((buffer_vals.shader_vars.use_filter & (0x01)) == 0) { // Depth field not engaged
             color = filterDrawing4(sampler2d, tex_coord, float(buffer_vals.shader_vars.width), float(buffer_vals.shader_vars.height), float(buffer_vals.shader_vars.seek_value2));
 
-        } else { // Drawing and BeeEye are both engaged
-            color = filterBeeEye(sampler2d, tex_coord, float(buffer_vals.shader_vars.width), float(buffer_vals.shader_vars.height), float(buffer_vals.shader_vars.seek_value1), true, float(buffer_vals.shader_vars.seek_value2));
+        } else { // Drawing and Height field are both engaged
+            color = filterHeightField(sampler2d, tex_coord, float(buffer_vals.shader_vars.width), float(buffer_vals.shader_vars.height), buffer_vals.shader_vars.time_value, buffer_vals.shader_vars.rotation, buffer_vals.shader_vars.seek_value1, buffer_vals.shader_vars.seek_value2, true);
         }
     }
 
