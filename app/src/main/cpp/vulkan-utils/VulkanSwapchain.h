@@ -37,7 +37,6 @@ struct SwapchainImage {
 
     // Framebuffer variables that will copied out to the ring_buffer to be saved
     VkImage imageCopy;
-    VkImageView imageViewCopy;
     VkDeviceMemory imageCopyMemory;
     VkSemaphore copySemaphore;
     VkFence imageCopyFence;
