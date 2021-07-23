@@ -53,6 +53,12 @@ import java.io.File
 import java.lang.Exception
 import java.lang.Thread.sleep
 import kotlin.concurrent.thread
+import android.content.pm.ConfigurationInfo
+
+import android.app.ActivityManager
+
+
+
 
 // Arbitrary ids to keep track of permission requests
 private const val REQUEST_CAMERA_PERMISSION = 1
