@@ -127,6 +127,23 @@ bool VulkanInstance::init() {
     ASSERT(queueFamilyIndex < queueFamilyCount);
     mQueueFamilyIndex = queueFamilyIndex;
 
+    // Enable YUV sampler
+    VkPhysicalDeviceSamplerYcbcrConversionFeaturesKHR ycbcrFeatures{
+            .sType =
+            VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_YCBCR_CONVERSION_FEATURES_KHR,
+            .pNext = nullptr,
+    };
+    VkPhysicalDeviceFeatures2KHR physicalDeviceFeatures{
+            .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR,
+            .pNext = &ycbcrFeatures,
+    };
+    PFN_vkGetPhysicalDeviceFeatures2KHR getFeatures =
+            (PFN_vkGetPhysicalDeviceFeatures2KHR)vkGetInstanceProcAddr(
+                    mInstance, "vkGetPhysicalDeviceFeatures2KHR");
+    ASSERT(getFeatures);
+    getFeatures(mGpu, &physicalDeviceFeatures);
+    ASSERT(ycbcrFeatures.samplerYcbcrConversion == VK_TRUE);
+
     float priorities[] = {1.0f};
     VkDeviceQueueCreateInfo queueCreateInfo{
             .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
@@ -139,7 +156,7 @@ bool VulkanInstance::init() {
 
     VkDeviceCreateInfo deviceCreateInfo{
             .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
-            .pNext = nullptr,
+            .pNext = &ycbcrFeatures,
             .queueCreateInfoCount = 1,
             .pQueueCreateInfos = &queueCreateInfo,
             .enabledLayerCount = 0,
@@ -157,22 +174,6 @@ bool VulkanInstance::init() {
     ASSERT(mPfnGetAndroidHardwareBufferPropertiesANDROID);
 
     logd("VulkanInstance Init, all good with AHB");
-
-    VkPhysicalDeviceSamplerYcbcrConversionFeaturesKHR ycbcrFeatures{
-            .sType =
-            VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_YCBCR_CONVERSION_FEATURES_KHR,
-            .pNext = nullptr,
-    };
-    VkPhysicalDeviceFeatures2KHR physicalDeviceFeatures{
-            .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR,
-            .pNext = &ycbcrFeatures,
-    };
-    PFN_vkGetPhysicalDeviceFeatures2KHR getFeatures =
-            (PFN_vkGetPhysicalDeviceFeatures2KHR)vkGetInstanceProcAddr(
-                    mInstance, "vkGetPhysicalDeviceFeatures2KHR");
-    ASSERT(getFeatures);
-    getFeatures(mGpu, &physicalDeviceFeatures);
-    ASSERT(ycbcrFeatures.samplerYcbcrConversion == VK_TRUE);
 
     vkGetDeviceQueue(mDevice, 0, 0, &mQueue);
     vkGetPhysicalDeviceMemoryProperties(mGpu, &mMemoryProperties);
