@@ -44,6 +44,29 @@ bool checkValidationLayerSupport() {
     return true;
 }
 
+static bool enumerateDeviceExtensions(VkPhysicalDevice device,
+                                      std::vector<VkExtensionProperties>* extensions) {
+    VkResult result;
+
+    uint32_t count = 0;
+    result = vkEnumerateDeviceExtensionProperties(device, nullptr, &count, nullptr);
+    if (result != VK_SUCCESS) return false;
+
+    extensions->resize(count);
+    result = vkEnumerateDeviceExtensionProperties(device, nullptr, &count, extensions->data());
+    if (result != VK_SUCCESS) return false;
+
+    return true;
+}
+
+static bool hasExtension(const char* extension_name,
+                         const std::vector<VkExtensionProperties>& extensions) {
+    return std::find_if(extensions.cbegin(), extensions.cend(),
+                        [extension_name](const VkExtensionProperties& extension) {
+                            return strcmp(extension.extensionName, extension_name) == 0;
+                        }) != extensions.cend();
+}
+
 bool VulkanInstance::init() {
     // Validation layers
     if (enableValidationLayers && !checkValidationLayerSupport()) {
@@ -53,38 +76,43 @@ bool VulkanInstance::init() {
     VkApplicationInfo appInfo = {
             .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
             .pNext = nullptr,
-            .apiVersion = VK_MAKE_VERSION(1, 1, 0),
-            .applicationVersion = VK_MAKE_VERSION(1, 0, 0),
-            .engineVersion = VK_MAKE_VERSION(1, 0, 0),
             .pApplicationName = "VulkanPhoto",
+            .applicationVersion = VK_MAKE_VERSION(1, 0, 0),
             .pEngineName = "VulkanPhotoEngine",
+            .engineVersion = VK_MAKE_VERSION(1, 0, 0),
+            .apiVersion = VK_MAKE_VERSION(1, 1, 0),
     };
 
-    std::vector<const char *> instanceExt, deviceExt;
+    // Set up the Vulkan instance
+    std::vector<const char *> instanceExt;
     instanceExt.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
     instanceExt.push_back(VK_KHR_EXTERNAL_MEMORY_CAPABILITIES_EXTENSION_NAME);
     instanceExt.push_back(VK_KHR_EXTERNAL_SEMAPHORE_CAPABILITIES_EXTENSION_NAME);
     instanceExt.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
     instanceExt.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
     instanceExt.push_back(VK_KHR_ANDROID_SURFACE_EXTENSION_NAME);
-    deviceExt.push_back(VK_KHR_GET_MEMORY_REQUIREMENTS_2_EXTENSION_NAME);
-    deviceExt.push_back(VK_KHR_BIND_MEMORY_2_EXTENSION_NAME);
-    deviceExt.push_back(VK_KHR_EXTERNAL_MEMORY_EXTENSION_NAME);
-    deviceExt.push_back(VK_KHR_EXTERNAL_SEMAPHORE_EXTENSION_NAME);
-    deviceExt.push_back(VK_KHR_EXTERNAL_SEMAPHORE_FD_EXTENSION_NAME);
-    deviceExt.push_back(VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME);
-    deviceExt.push_back(VK_ANDROID_EXTERNAL_MEMORY_ANDROID_HARDWARE_BUFFER_EXTENSION_NAME);
-    deviceExt.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
-//    deviceExt.push_back(VK_KHR_UNIFORM_BUFFER_STANDARD_LAYOUT_EXTENSION_NAME); // Doesn't exist yet
 
     VkInstanceCreateInfo createInfo = {
             .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
             .pNext = nullptr,
             .pApplicationInfo = &appInfo,
+            .enabledLayerCount = 0,
+            .ppEnabledLayerNames = nullptr,
             .enabledExtensionCount = static_cast<uint32_t>(instanceExt.size()),
             .ppEnabledExtensionNames = instanceExt.data(),
     };
+    VK_CALL(vkCreateInstance(&createInfo, nullptr, &mInstance));
 
+    // Find a GPU to use.
+    uint32_t gpuCount = 0;
+    int status = vkEnumeratePhysicalDevices(mInstance, &gpuCount, nullptr);
+    if (0 < gpuCount)
+        status = vkEnumeratePhysicalDevices(mInstance, &gpuCount, &mGpu);
+
+    ASSERT(status == VK_SUCCESS || status == VK_INCOMPLETE);
+    ASSERT(gpuCount > 0);
+
+    // Enable validation // debugging
     if (enableValidationLayers) {
         createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
         createInfo.ppEnabledLayerNames = validationLayers.data();
@@ -101,15 +129,30 @@ bool VulkanInstance::init() {
 //    vks::debug::setupDebugging(mInstance, VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT, VK_NULL_HANDLE);
 //    vks::debug::setupDebugging(mInstance, VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT, VK_NULL_HANDLE);
 
-    // Find a GPU to use.
-    uint32_t gpuCount = 0;
-    int status = vkEnumeratePhysicalDevices(mInstance, &gpuCount, nullptr);
-    if (0 < gpuCount)
-        status = vkEnumeratePhysicalDevices(mInstance, &gpuCount, &mGpu);
+    // Setup extensions
+    VkPhysicalDeviceProperties physicalDeviceProperties;
+    vkGetPhysicalDeviceProperties(mGpu, &physicalDeviceProperties);
+    std::vector<const char *> deviceExt;
+    // if (physicalDeviceProperties.apiVersion < VK_API_VERSION_1_1) {
+        deviceExt.push_back(VK_KHR_GET_MEMORY_REQUIREMENTS_2_EXTENSION_NAME);
+        deviceExt.push_back(VK_KHR_BIND_MEMORY_2_EXTENSION_NAME);
+        deviceExt.push_back(VK_KHR_EXTERNAL_MEMORY_EXTENSION_NAME);
+        deviceExt.push_back(VK_KHR_EXTERNAL_SEMAPHORE_EXTENSION_NAME);
+    // }
+    deviceExt.push_back(VK_KHR_EXTERNAL_SEMAPHORE_FD_EXTENSION_NAME);
+    deviceExt.push_back(VK_EXT_QUEUE_FAMILY_FOREIGN_EXTENSION_NAME);
+    deviceExt.push_back(VK_ANDROID_EXTERNAL_MEMORY_ANDROID_HARDWARE_BUFFER_EXTENSION_NAME);
+    deviceExt.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+    deviceExt.push_back(VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME);
+    // deviceExt.push_back(VK_KHR_UNIFORM_BUFFER_STANDARD_LAYOUT_EXTENSION_NAME); // Doesn't exist yet
 
-    ASSERT(status == VK_SUCCESS || status == VK_INCOMPLETE);
-    ASSERT(gpuCount > 0);
+    std::vector<VkExtensionProperties> supportedDeviceExtensions;
+    ASSERT(enumerateDeviceExtensions(mGpu, &supportedDeviceExtensions));
+    for (const auto extension : deviceExt) {
+        ASSERT(hasExtension(extension, supportedDeviceExtensions));
+    }
 
+    // Queue family support
     uint32_t queueFamilyCount = 0;
     vkGetPhysicalDeviceQueueFamilyProperties(mGpu, &queueFamilyCount, nullptr);
     ASSERT(queueFamilyCount != 0);
@@ -137,7 +180,7 @@ bool VulkanInstance::init() {
             .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR,
             .pNext = &ycbcrFeatures,
     };
-    PFN_vkGetPhysicalDeviceFeatures2KHR getFeatures =
+    auto getFeatures =
             (PFN_vkGetPhysicalDeviceFeatures2KHR)vkGetInstanceProcAddr(
                     mInstance, "vkGetPhysicalDeviceFeatures2KHR");
     ASSERT(getFeatures);
@@ -149,8 +192,8 @@ bool VulkanInstance::init() {
             .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
             .pNext = nullptr,
             .flags = 0,
-            .queueCount = 1,
             .queueFamilyIndex = queueFamilyIndex,
+            .queueCount = 1,
             .pQueuePriorities = priorities,
     };
 
@@ -173,11 +216,8 @@ bool VulkanInstance::init() {
                     mDevice, "vkGetAndroidHardwareBufferPropertiesANDROID");
     ASSERT(mPfnGetAndroidHardwareBufferPropertiesANDROID);
 
-    logd("VulkanInstance Init, all good with AHB");
-
     vkGetDeviceQueue(mDevice, 0, 0, &mQueue);
     vkGetPhysicalDeviceMemoryProperties(mGpu, &mMemoryProperties);
-
 
     return true;
 }

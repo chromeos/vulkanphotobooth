@@ -165,9 +165,9 @@ bool VulkanSwapchain::init(VkSurfaceKHR *vkSurface, VkSurfaceCapabilitiesKHR *su
         VkImageView imageView;
         VkImageViewCreateInfo imageViewCreateInfo = {
                 .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-                .image = image,
                 .pNext = nullptr,
                 .flags = 0u,
+                .image = image,
                 .viewType = VK_IMAGE_VIEW_TYPE_2D,
                 .format = format->format,
                 .components = {VK_COMPONENT_SWIZZLE_IDENTITY,
@@ -289,9 +289,9 @@ bool VulkanSwapchain::init(VkSurfaceKHR *vkSurface, VkSurfaceCapabilitiesKHR *su
         VkImageView imageViewPrevious;
         VkImageViewCreateInfo imageViewPreviousCreateInfo = {
                 .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-                .image = imagePrevious,
                 .pNext = nullptr,
                 .flags = 0u,
+                .image = imagePrevious,
                 .viewType = VK_IMAGE_VIEW_TYPE_2D,
                 .format = format->format,
                 .components = {VK_COMPONENT_SWIZZLE_IDENTITY,
