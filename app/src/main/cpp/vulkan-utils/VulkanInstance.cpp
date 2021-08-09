@@ -28,7 +28,7 @@ bool checkValidationLayerSupport() {
     for (const char* layerName : validationLayers) {
         bool layerFound = false;
 
-        //logd("Layer name: %s", layerName);
+        // logd("Layer name: %s", layerName);
         for (const auto& layerProperties : availableLayers) {
             if (strcmp(layerName, layerProperties.layerName) == 0) {
                 layerFound = true;
@@ -80,7 +80,7 @@ bool VulkanInstance::init() {
             .applicationVersion = VK_MAKE_VERSION(1, 0, 0),
             .pEngineName = "VulkanPhotoEngine",
             .engineVersion = VK_MAKE_VERSION(1, 0, 0),
-            .apiVersion = VK_MAKE_VERSION(1, 1, 0),
+            .apiVersion = VK_MAKE_VERSION(1, 2, 0),
     };
 
     // Set up the Vulkan instance
@@ -122,7 +122,8 @@ bool VulkanInstance::init() {
     }
     VK_CALL(vkCreateInstance(&createInfo, nullptr, &mInstance));
 
-    vks::debug::setupDebugging(mInstance, VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT, VK_NULL_HANDLE);
+    vks::debug::setupDebugging(mInstance, VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT | VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT, VK_NULL_HANDLE);
+//    vks::debug::setupDebugging(mInstance, VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT, VK_NULL_HANDLE);
 //    vks::debug::setupDebugging(mInstance, VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT, VK_NULL_HANDLE);
 //    vks::debug::setupDebugging(mInstance, VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT, VK_NULL_HANDLE);
 //    vks::debug::setupDebugging(mInstance, VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT, VK_NULL_HANDLE);

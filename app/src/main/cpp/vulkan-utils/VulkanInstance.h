@@ -30,7 +30,7 @@ const bool enableValidationLayers = false;
 
 const std::vector<const char*> validationLayers = {
         // After Vulkan 1.2+ only use this layer, for now select which layers to use
-        // "VK_LAYER_KHRONOS_validation"
+         "VK_LAYER_KHRONOS_validation"
 
         // Parameter validation throws a huge number of errors about
         // VK_STRUCTURE_TYPE_EXTERNAL_FORMAT_ANDROID as this has not yet been added
@@ -41,9 +41,9 @@ const std::vector<const char*> validationLayers = {
         // A/libc: Fatal signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 0x0 in tid 13347 (ImageReader-326), pid 13308 (ulkanphotobooth)
         // "VK_LAYER_LUNARG_core_validation",
 
-        "VK_LAYER_GOOGLE_threading",
-        "VK_LAYER_LUNARG_object_tracker",
-        "VK_LAYER_GOOGLE_unique_objects",
+        // "VK_LAYER_GOOGLE_threading",
+        // "VK_LAYER_LUNARG_object_tracker",
+        // "VK_LAYER_GOOGLE_unique_objects",
 };
 
 class VulkanInstance {
