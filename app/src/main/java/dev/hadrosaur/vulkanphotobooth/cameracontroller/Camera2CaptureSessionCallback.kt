@@ -33,25 +33,23 @@ class Camera2CaptureSessionCallback(
 ) : CameraCaptureSession.CaptureCallback() {
 
     override fun onCaptureSequenceCompleted(
-        session: CameraCaptureSession?,
+        session: CameraCaptureSession,
         sequenceId: Int,
         frameNumber: Long
     ) {
-        if (session != null)
-            super.onCaptureSequenceCompleted(session, sequenceId, frameNumber)
+        super.onCaptureSequenceCompleted(session, sequenceId, frameNumber)
     }
 
-    override fun onCaptureSequenceAborted(session: CameraCaptureSession?, sequenceId: Int) {
+    override fun onCaptureSequenceAborted(session: CameraCaptureSession, sequenceId: Int) {
         MainActivity.logd("Camera2CaptureSessionCallback : Capture sequence ABORTED")
 
-        if (session != null)
-            super.onCaptureSequenceAborted(session, sequenceId)
+        super.onCaptureSequenceAborted(session, sequenceId)
     }
 
     override fun onCaptureFailed(
-        session: CameraCaptureSession?,
-        request: CaptureRequest?,
-        failure: CaptureFailure?
+        session: CameraCaptureSession,
+        request: CaptureRequest,
+        failure: CaptureFailure
     ) {
         MainActivity.logd("Camera2CaptureSessionCallback : Capture sequence FAILED - " +
             failure?.reason)

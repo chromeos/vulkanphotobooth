@@ -49,7 +49,6 @@ struct SwapchainImage {
 
     VkCommandBuffer cmdBuffer;
     AImage *old_aimage;
-    VulkanAHardwareBufferImage *old_vkAHB;
 };
 
 /**

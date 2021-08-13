@@ -21,7 +21,7 @@ plugins {
 }
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 30
     defaultConfig {
         applicationId "dev.hadrosaur.vulkanphotobooth"
         minSdkVersion 27

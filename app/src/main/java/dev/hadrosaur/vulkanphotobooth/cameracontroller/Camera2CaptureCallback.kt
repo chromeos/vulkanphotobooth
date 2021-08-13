@@ -29,15 +29,15 @@ class Camera2CaptureCallback(
     internal val params: CameraParams
     ) : CameraCaptureSession.CaptureCallback() {
 
-    override fun onCaptureSequenceAborted(session: CameraCaptureSession?, sequenceId: Int) {
+    override fun onCaptureSequenceAborted(session: CameraCaptureSession, sequenceId: Int) {
         if (session != null)
             super.onCaptureSequenceAborted(session, sequenceId)
     }
 
     override fun onCaptureFailed(
-        session: CameraCaptureSession?,
-        request: CaptureRequest?,
-        failure: CaptureFailure?
+        session: CameraCaptureSession,
+        request: CaptureRequest,
+        failure: CaptureFailure
     ) {
 
         if (!params.isOpen) {
@@ -56,8 +56,8 @@ class Camera2CaptureCallback(
     }
 
     override fun onCaptureStarted(
-        session: CameraCaptureSession?,
-        request: CaptureRequest?,
+        session: CameraCaptureSession,
+        request: CaptureRequest,
         timestamp: Long,
         frameNumber: Long
     ) {
@@ -66,18 +66,18 @@ class Camera2CaptureCallback(
     }
 
     override fun onCaptureProgressed(
-        session: CameraCaptureSession?,
-        request: CaptureRequest?,
-        partialResult: CaptureResult?
+        session: CameraCaptureSession,
+        request: CaptureRequest,
+        partialResult: CaptureResult
     ) {
         if (session != null && request != null && partialResult != null)
             super.onCaptureProgressed(session, request, partialResult)
     }
 
     override fun onCaptureBufferLost(
-        session: CameraCaptureSession?,
-        request: CaptureRequest?,
-        target: Surface?,
+        session: CameraCaptureSession,
+        request: CaptureRequest,
+        target: Surface,
         frameNumber: Long
     ) {
         MainActivity.logd("captureStillPicture captureCallback: Buffer lost")

@@ -123,7 +123,7 @@ fun camera2StartPreview(activity: MainActivity, params: CameraParams) {
 //        params.captureRequestBuilder =
 //            params.device?.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE)
 
-        params.captureRequestBuilder?.addTarget(params.previewImageReaderSurface)
+        params.captureRequestBuilder?.addTarget(params.previewImageReaderSurface!!)
 
         logd("In camera2StartPreview. Added request.")
         logd("Preview SurfaceView width: " + params.previewSurfaceView?.width + ", height: " + params.previewSurfaceView?.height)

@@ -34,7 +34,7 @@ class Camera2PreviewSessionStateCallback(
 ) : CameraCaptureSession.StateCallback() {
 
     // Preview session is open and frames are coming through.
-    override fun onActive(session: CameraCaptureSession?) {
+    override fun onActive(session: CameraCaptureSession) {
         if (!params.isOpen || params.state != CameraState.PREVIEW_RUNNING) {
             return
         }
@@ -44,8 +44,7 @@ class Camera2PreviewSessionStateCallback(
 
         // initializeStillCapture(activity, params, testConfig)
 
-        if (session != null)
-            super.onActive(session)
+        super.onActive(session)
     }
 
     /**

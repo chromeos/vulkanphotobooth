@@ -26,6 +26,9 @@ bool VulkanAHardwareBufferImage::init(AHardwareBuffer *buffer, bool useExternalF
     AHardwareBuffer_describe(buffer, &bufferDesc);
     ASSERT(bufferDesc.layers == 1);
 
+    // logd("Format: %x", bufferDesc.format);
+    // logd("Feature flags: %jx", bufferDesc.usage);
+
     // Get the AHB propertoes
     VkAndroidHardwareBufferFormatPropertiesANDROID formatInfo = {
             .sType =

@@ -567,7 +567,7 @@ bool VulkanImageRenderer::createPipeline(VkSampler sampler,
     return true;
 }
 
-double VulkanImageRenderer::renderImageAndReadback(VulkanAHardwareBufferImage *new_vkAHB,
+double VulkanImageRenderer::renderImageAndReadback(VulkanAHardwareBufferImage *vkAHB,
                                                     FilterParams *filter_params,
                                                    AImage *new_aimage,
                                                    bool draw_to_screen, bool surface_ready_left, bool surface_ready_right,
@@ -581,7 +581,6 @@ double VulkanImageRenderer::renderImageAndReadback(VulkanAHardwareBufferImage *n
     // TODO: this should be a seperate function from renderImageAndReadback with boolean check in native-lib.cpp
     if (!draw_to_screen) {
         AImage_delete(new_aimage);
-        delete(new_vkAHB);
 
         // Wait for all surfaces to be done rendering and free up resources
         for (int surface_i = 0; surface_i < VULKAN_RENDERER_NUM_DISPLAYS; surface_i++) {
@@ -594,7 +593,7 @@ double VulkanImageRenderer::renderImageAndReadback(VulkanAHardwareBufferImage *n
                 VK_CALL(vkWaitForFences(mInstance->device(), 1, &mSwapchains[surface_i].mSwapchainFences[fence_index], true, UINT64_MAX));
             }
 
-            //Delete any AImages and vkAHBs
+            //Delete any AImages
             // Each active surface depends on the camera image/ahb, free them when the last surface is done with it.
             for (int swapchain_index = 0; swapchain_index < mSwapchains[surface_i].mSwapchainLength; swapchain_index++) {
                 if (swapchainImage->old_aimage != nullptr) {
@@ -602,12 +601,6 @@ double VulkanImageRenderer::renderImageAndReadback(VulkanAHardwareBufferImage *n
                         AImage_delete(swapchainImage->old_aimage);
                     }
                     swapchainImage->old_aimage = nullptr;
-                }
-                if (swapchainImage->old_vkAHB != nullptr) {
-                    if (surface_i >= (VULKAN_RENDERER_NUM_DISPLAYS - 1)) {
-                        delete (swapchainImage->old_vkAHB);
-                    }
-                    swapchainImage->old_vkAHB = nullptr;
                 }
             }
         }
@@ -906,19 +899,15 @@ double VulkanImageRenderer::renderImageAndReadback(VulkanAHardwareBufferImage *n
         }
 
         ATrace_beginSection("VULKAN_PHOTOBOOTH: render delete old images");
-        // Free up old AImage and vkAHB for this swapchain image
+        // Free up old AImages for this swapchain image
         // Each active surface depends on the same camera image/ahb, free them when the last surface is done with it.
         if (surface_i >= (VULKAN_RENDERER_NUM_DISPLAYS - 1)) {
             if (swapchainImage->old_aimage != nullptr) {
                 AImage_delete(swapchainImage->old_aimage);
             }
-            if (swapchainImage->old_vkAHB != nullptr) {
-                delete(swapchainImage->old_vkAHB);
-            }
         }
 
         swapchainImage->old_aimage = new_aimage;
-        swapchainImage->old_vkAHB = new_vkAHB;
         render_state = RENDER_FRAME_SENT;
         ATrace_endSection();
 
@@ -997,8 +986,8 @@ double VulkanImageRenderer::renderImageAndReadback(VulkanAHardwareBufferImage *n
         {
             VkDescriptorImageInfo texDesc[2] {
                     {
-                        .sampler = new_vkAHB->sampler(),
-                        .imageView = new_vkAHB->view(),
+                        .sampler = vkAHB->sampler(),
+                        .imageView = vkAHB->view(),
                         .imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
                     },
                     {
@@ -1066,7 +1055,7 @@ double VulkanImageRenderer::renderImageAndReadback(VulkanAHardwareBufferImage *n
 
         // Acquire the AHB image resource so it can be sampled from
         addImageTransitionBarrier(
-                swapchainImage->cmdBuffer, new_vkAHB->image(),
+                swapchainImage->cmdBuffer, vkAHB->image(),
                 VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
                 0, VK_ACCESS_SHADER_READ_BIT,
                 VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
@@ -1137,7 +1126,7 @@ double VulkanImageRenderer::renderImageAndReadback(VulkanAHardwareBufferImage *n
 
         // Finished reading the AHB
         addImageTransitionBarrier(
-                swapchainImage->cmdBuffer, new_vkAHB->image(),
+                swapchainImage->cmdBuffer, vkAHB->image(),
                 VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
                 VK_ACCESS_SHADER_READ_BIT, VK_ACCESS_SHADER_WRITE_BIT,
                 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
@@ -1166,7 +1155,7 @@ double VulkanImageRenderer::renderImageAndReadback(VulkanAHardwareBufferImage *n
         ATrace_endSection();
 
         // Set up present semaphore
-        VkSemaphore semaphore = new_vkAHB->semaphore();
+        VkSemaphore semaphore = vkAHB->semaphore();
         VkPipelineStageFlags semaphoreWaitFlags =
                 VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
         VkSubmitInfo queueSubmitInfo = {
