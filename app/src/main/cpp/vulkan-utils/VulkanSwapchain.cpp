@@ -88,10 +88,6 @@ VulkanSwapchain::~VulkanSwapchain() {
                 AImage_delete(mSwapchainImages[i].old_aimage);
                 mSwapchainImages[i].old_aimage = nullptr;
             }
-            if (mSwapchainImages[i].old_vkAHB != nullptr) {
-                free(mSwapchainImages[i].old_vkAHB);
-                mSwapchainImages[i].old_vkAHB = nullptr;
-            }
         }
     } // For all swapchains
 }
@@ -375,7 +371,6 @@ bool VulkanSwapchain::init(VkSurfaceKHR *vkSurface, VkSurfaceCapabilitiesKHR *su
 
                 .cmdBuffer = cmdBuffer,
                 .old_aimage = nullptr,
-                .old_vkAHB = nullptr,
         };
     }
 

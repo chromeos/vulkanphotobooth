@@ -42,6 +42,9 @@ ImageReaderListener::ImageReaderListener(VulkanInstance *instance, VulkanImageRe
     mFilterParams = filterParams;
     mMainOutputWindow = outputWindow;
 
+    // Set up AHB Manager
+    vahb_manager.setVulkanInstance(instance);
+
     // Create ring buffer for GIF creation
     gifRingBuffer = new RingBuffer<uint32_t *>(NUM_GIF_FRAMES);
 }
@@ -112,13 +115,8 @@ void ImageReaderListener::onImageAvailable(void* obj, AImageReader* reader) {
         loge("AImage_getHardwareBuffer failed: error: %d", ret);
     ATrace_endSection();
 
-    // Set up the Vulkan AHB and connect the Android AHB to it
-    ATrace_beginSection("VULKAN_PHOTOBOOTH: vkAHB creation.");
-    // Import the AHardwareBuffer into Vulkan. NOTE: the vkAHB will be freed by the renderer
-    auto vkAHB = new VulkanAHardwareBufferImage(mInstance);
-    ASSERT_FORMATTED(vkAHB->init(ahb, true ),
-                     "Could not init VulkanAHardwareBufferImage.");
-    ATrace_endSection();
+    // Get/add the corresponding VulkanAHardwareBuffer from the hashmap
+    VulkanAHardwareBufferImage *vkAHB = vahb_manager.getVulkanAHB(ahb);
 
     // The first time an image is received, create the render pipeline, afterward re-use the same pipeline
     if (!mRenderer->isPipelineInitialized) {

@@ -96,11 +96,17 @@ bool VulkanInstance::init() {
             .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
             .pNext = nullptr,
             .pApplicationInfo = &appInfo,
-            .enabledLayerCount = 0,
-            .ppEnabledLayerNames = nullptr,
             .enabledExtensionCount = static_cast<uint32_t>(instanceExt.size()),
             .ppEnabledExtensionNames = instanceExt.data(),
     };
+    // Enable validation // debugging
+    if (enableValidationLayers) {
+        createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
+        createInfo.ppEnabledLayerNames = validationLayers.data();
+    } else {
+        createInfo.enabledLayerCount = 0;
+        createInfo.ppEnabledLayerNames = nullptr;
+    }
     VK_CALL(vkCreateInstance(&createInfo, nullptr, &mInstance));
 
     // Find a GPU to use.
@@ -112,34 +118,16 @@ bool VulkanInstance::init() {
     ASSERT(status == VK_SUCCESS || status == VK_INCOMPLETE);
     ASSERT(gpuCount > 0);
 
-    // Enable validation // debugging
-    if (enableValidationLayers) {
-        createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
-        createInfo.ppEnabledLayerNames = validationLayers.data();
-    } else {
-        createInfo.enabledLayerCount = 0;
-        createInfo.ppEnabledLayerNames = nullptr;
-    }
-    VK_CALL(vkCreateInstance(&createInfo, nullptr, &mInstance));
-
     vks::debug::setupDebugging(mInstance, VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT | VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT, VK_NULL_HANDLE);
-//    vks::debug::setupDebugging(mInstance, VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT, VK_NULL_HANDLE);
-//    vks::debug::setupDebugging(mInstance, VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT, VK_NULL_HANDLE);
-//    vks::debug::setupDebugging(mInstance, VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT, VK_NULL_HANDLE);
-//    vks::debug::setupDebugging(mInstance, VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT, VK_NULL_HANDLE);
-//    vks::debug::setupDebugging(mInstance, VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT, VK_NULL_HANDLE);
-//    vks::debug::setupDebugging(mInstance, VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT, VK_NULL_HANDLE);
 
     // Setup extensions
     VkPhysicalDeviceProperties physicalDeviceProperties;
     vkGetPhysicalDeviceProperties(mGpu, &physicalDeviceProperties);
     std::vector<const char *> deviceExt;
-    // if (physicalDeviceProperties.apiVersion < VK_API_VERSION_1_1) {
-        deviceExt.push_back(VK_KHR_GET_MEMORY_REQUIREMENTS_2_EXTENSION_NAME);
-        deviceExt.push_back(VK_KHR_BIND_MEMORY_2_EXTENSION_NAME);
-        deviceExt.push_back(VK_KHR_EXTERNAL_MEMORY_EXTENSION_NAME);
-        deviceExt.push_back(VK_KHR_EXTERNAL_SEMAPHORE_EXTENSION_NAME);
-    // }
+    deviceExt.push_back(VK_KHR_GET_MEMORY_REQUIREMENTS_2_EXTENSION_NAME);
+    deviceExt.push_back(VK_KHR_BIND_MEMORY_2_EXTENSION_NAME);
+    deviceExt.push_back(VK_KHR_EXTERNAL_MEMORY_EXTENSION_NAME);
+    deviceExt.push_back(VK_KHR_EXTERNAL_SEMAPHORE_EXTENSION_NAME);
     deviceExt.push_back(VK_KHR_EXTERNAL_SEMAPHORE_FD_EXTENSION_NAME);
     deviceExt.push_back(VK_EXT_QUEUE_FAMILY_FOREIGN_EXTENSION_NAME);
     deviceExt.push_back(VK_ANDROID_EXTERNAL_MEMORY_ANDROID_HARDWARE_BUFFER_EXTENSION_NAME);

@@ -21,6 +21,7 @@
 #include <media/NdkImageReader.h>
 #include "vulkan-utils/VulkanImageRenderer.h"
 #include "ring_buffer.h"
+#include "vulkan-utils/VulkanAHBManager.h"
 
 /**
  * Listener for each new frame received from the camera
@@ -44,6 +45,7 @@ public:
     static int gif_frames_captured; // Counter for # frames captured for GIF so far
 
     ImageReaderListener(VulkanInstance *instance, VulkanImageRenderer *renderer, FilterParams *filterParams, ANativeWindow *outputWindow);
+    VulkanAHBManager vahb_manager;
 
     static void onImageAvailableCallback(void* obj, AImageReader* reader);
     void onImageAvailable(void* obj, AImageReader* reader);

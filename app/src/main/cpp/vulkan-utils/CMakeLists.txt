@@ -30,6 +30,7 @@ add_library(vulkan-utils SHARED
         vulkan_utils.cpp
         VulkanInstance.cpp
         VulkanAHardwareBufferImage.cpp
+        VulkanAHBManager.cpp
         VulkanImageRenderer.cpp
         VulkanSwapchain.cpp
         VulkanSurface.cpp

@@ -279,7 +279,7 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
         // Handler to receive fps messages and send them to the UI
         nativeUpdateFpsHandler = @SuppressLint("HandlerLeak")
         object : Handler() {
-            override fun handleMessage(msg: Message?) {
+            override fun handleMessage(msg: Message) {
                 if (null != msg) {
                     updateFpsText(msg.arg1.toFloat() / 10, msg.arg2)
                 }
@@ -289,7 +289,7 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
         // Handler to receive GIF progress messages and send them to the UI
         nativeUpdateGifProgressHandler = @SuppressLint("HandlerLeak")
         object : Handler() {
-            override fun handleMessage(msg: Message?) {
+            override fun handleMessage(msg: Message) {
                 if (null != msg) {
                     val progress = msg.arg1.toFloat() / 100
 
@@ -318,7 +318,7 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
         // to encode on this new thread. This way Kotlin handles the thread management
         nativeGifReadyToEncodeHandler = @SuppressLint("HandlerLeak")
         object : Handler() {
-            override fun handleMessage(msg: Message?) {
+            override fun handleMessage(msg: Message) {
                 if (null != msg) {
                     thread(start = true, name = "VulkanEncodeGif") {
                         runOnUiThread {
@@ -510,7 +510,7 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
         */
     }
 
-    override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
+    override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
         if (!cameraParams.id.equals("") && checkPermissions()) {
             camera2OpenCamera(this, cameraParams)
         } else {
@@ -521,7 +521,7 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
         setNativeDrawToDisplay(true)
     }
 
-    override fun surfaceDestroyed(holder: SurfaceHolder?) {
+    override fun surfaceDestroyed(holder: SurfaceHolder) {
         surfaceReady(false)
 
         // Stop the camera outputting frames to the screen
@@ -535,7 +535,7 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
         }
     }
 
-    override fun surfaceCreated(holder: SurfaceHolder?) {
+    override fun surfaceCreated(holder: SurfaceHolder) {
     }
 
     /**

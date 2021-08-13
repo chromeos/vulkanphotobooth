@@ -82,7 +82,7 @@ public:
      *
      * This is the main workhorse of the pipeline that processes each new frame image.
      *
-     * @param new_vkAHB VulkanAHardwareBufferImage ready to be used with the new AImaged
+     * @param vkAHB VulkanAHardwareBufferImage ready to be used with the new AImaged
      * @param filter_params Current filter paramters
      * @param new_aimage New AImage from the ImageReader
      * @param draw_to_screen Is Vulkan allowed to draw to the screen
@@ -92,7 +92,7 @@ public:
      * @param image_copy_data If not null, the frame should be copied into the given, pre-allocated, memory
      * @return Time (in ms) that frame render took. NOTE: this does not work currently
      */
-    double renderImageAndReadback(VulkanAHardwareBufferImage *new_vkAHB,
+    double renderImageAndReadback(VulkanAHardwareBufferImage *vkAHB,
                                   FilterParams *filter_params, AImage *new_aimage,
                                   bool draw_to_screen, bool surface_ready_left, bool surface_ready_right,
                                   RENDERER_RETURN_CODE &render_state,
