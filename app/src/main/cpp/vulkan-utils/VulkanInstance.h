@@ -62,5 +62,4 @@ class VulkanInstance {
                 mPfnGetAndroidHardwareBufferPropertiesANDROID = nullptr;
 };
 
-
 #endif //VULKAN_PHOTO_BOOTH_VULKANINSTANCE_H

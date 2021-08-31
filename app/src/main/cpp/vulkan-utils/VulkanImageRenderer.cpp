@@ -23,6 +23,10 @@
 #include "VulkanImageRenderer.h"
 #include "vulkan_utils.h"
 
+// For validation we should use FOREIGN here, but EXTERNAL can be faster.
+// const uint32_t VULKAN_QUEUE_FAMILY = VK_QUEUE_FAMILY_EXTERNAL_KHR;
+const uint32_t VULKAN_QUEUE_FAMILY = VK_QUEUE_FAMILY_FOREIGN_EXT;
+
 VulkanImageRenderer::VulkanImageRenderer(VulkanInstance *init,  uint32_t num_displays,
         uint32_t width, uint32_t height,
                                          VkFormat format, VkColorSpaceKHR colorSpace)
@@ -1059,7 +1063,7 @@ double VulkanImageRenderer::renderImageAndReadback(VulkanAHardwareBufferImage *v
                 VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
                 0, VK_ACCESS_SHADER_READ_BIT,
                 VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-                VK_QUEUE_FAMILY_FOREIGN_EXT, mInstance->queueFamilyIndex());
+                VULKAN_QUEUE_FAMILY, mInstance->queueFamilyIndex());
 
         if (filter_params->use_filter[BLUR_BUTTON]) {
             // Transition the N-1 frame to read from
@@ -1068,7 +1072,7 @@ double VulkanImageRenderer::renderImageAndReadback(VulkanAHardwareBufferImage *v
                     VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
                     0, VK_ACCESS_SHADER_READ_BIT,
                     VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-                    VK_QUEUE_FAMILY_FOREIGN_EXT, mInstance->queueFamilyIndex());
+                    VULKAN_QUEUE_FAMILY, mInstance->queueFamilyIndex());
         }
 
         // Transition the destination texture for use as a framebuffer.
@@ -1077,7 +1081,7 @@ double VulkanImageRenderer::renderImageAndReadback(VulkanAHardwareBufferImage *v
                 VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
                 0, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
                 VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-                VK_QUEUE_FAMILY_FOREIGN_EXT, mInstance->queueFamilyIndex());
+                VULKAN_QUEUE_FAMILY, mInstance->queueFamilyIndex());
 
 
         ATrace_endSection();
@@ -1130,7 +1134,7 @@ double VulkanImageRenderer::renderImageAndReadback(VulkanAHardwareBufferImage *v
                 VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
                 VK_ACCESS_SHADER_READ_BIT, VK_ACCESS_SHADER_WRITE_BIT,
                 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-                VK_QUEUE_FAMILY_FOREIGN_EXT, mInstance->queueFamilyIndex());
+                VULKAN_QUEUE_FAMILY, mInstance->queueFamilyIndex());
 
         // Finished reading from the N-1 frame
         if (filter_params->use_filter[BLUR_BUTTON]) {
@@ -1139,7 +1143,7 @@ double VulkanImageRenderer::renderImageAndReadback(VulkanAHardwareBufferImage *v
                     VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
                     VK_ACCESS_SHADER_READ_BIT, VK_ACCESS_SHADER_WRITE_BIT,
                     VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-                    VK_QUEUE_FAMILY_FOREIGN_EXT, mInstance->queueFamilyIndex());
+                    VULKAN_QUEUE_FAMILY, mInstance->queueFamilyIndex());
         }
 
         // Finished writing to the frame buffer
@@ -1148,7 +1152,7 @@ double VulkanImageRenderer::renderImageAndReadback(VulkanAHardwareBufferImage *v
                 VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT,
                 VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, VK_ACCESS_TRANSFER_READ_BIT,
                 VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
-                VK_QUEUE_FAMILY_FOREIGN_EXT, mInstance->queueFamilyIndex());
+                VULKAN_QUEUE_FAMILY, mInstance->queueFamilyIndex());
 
         ATrace_beginSection("VULKAN_PHOTOBOOTH: render end buffer");
         VK_CALL(vkEndCommandBuffer(swapchainImage->cmdBuffer));
