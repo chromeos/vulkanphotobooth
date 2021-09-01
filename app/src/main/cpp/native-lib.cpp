@@ -59,11 +59,12 @@ uint32_t NUM_DISPLAYS = 0;
 // Vulkan globals
 VulkanInstance *vulkan_instance = nullptr;
 VulkanImageRenderer *renderer = nullptr;
+VulkanAHBManager *vahbManager = nullptr;
 
 // Current set of filter paramters
 FilterParams *filter_params = nullptr;
 
-GCTGifEncoder* gifEncoder = nullptr;
+GCTGifEncoder *gifEncoder = nullptr;
 //FastGifEncoder* gifEncoder = nullptr;
 
 // Default GIF width/height
@@ -113,6 +114,10 @@ bool InitializeVulkan() {
         return false;
     }
 
+    // Create AHB manager
+    vahbManager = new VulkanAHBManager();
+    vahbManager->setVulkanInstance(vulkan_instance);
+
     ImageReaderListener::native_draw_to_display = true;
     return true;
 }
@@ -144,7 +149,7 @@ void areSurfacesReady() {
 //    ASSERT_FORMATTED(renderer->init(output_window, output_window, output_window), "Could not init VulkanImageRenderer.");
 
     // Set up ImageReader
-    listener = new ImageReaderListener(vulkan_instance, renderer, filter_params, output_window);
+    listener = new ImageReaderListener(vulkan_instance, renderer, vahbManager, filter_params, output_window);
     AImageReader_ImageListener preview_image_listener { listener, ImageReaderListener::onImageAvailableCallback };
     AImageReader_setImageListener(preview_reader, &preview_image_listener);
 }
@@ -157,6 +162,7 @@ void cleanup() {
     if (nullptr != renderer)
         delete(renderer);
 
+    delete(vahbManager);
     delete(vulkan_instance);
     delete(filter_params);
     delete(listener);

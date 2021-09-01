@@ -135,7 +135,6 @@ bool VulkanImageRenderer::init(ANativeWindow *output_window, ANativeWindow *outp
 
     // Create the output surfaces
     {
-
         uint32_t queue_family_count;
         vkGetPhysicalDeviceQueueFamilyProperties(mInstance->gpu(), &queue_family_count,
                                                  NULL);

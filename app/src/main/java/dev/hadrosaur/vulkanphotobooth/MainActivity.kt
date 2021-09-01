@@ -435,7 +435,7 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
             midiManager = getSystemService(Context.MIDI_SERVICE) as MidiManager
             initializeMidiControls(this)
         } else {
-            logd("This device does not support MIDI.")
+            // logd("This device does not support MIDI.")
         }
 
         // Setup on-screen UI
@@ -880,12 +880,12 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
         if (!hasMidi) return
 
         val midiDeviceInfos = midiManager.devices
-        logd("MIDI: Number of connected devices: " + midiDeviceInfos.size)
+        // logd("MIDI: Number of connected devices: " + midiDeviceInfos.size)
         for (info: MidiDeviceInfo in midiDeviceInfos) {
-            logd("A MIDI device is plugged in: " + info.id + ", output ports: " + info.outputPortCount)
+            // logd("A MIDI device is plugged in: " + info.id + ", output ports: " + info.outputPortCount)
             val props: Bundle = info.getProperties()
-            logd("Props for " + info.id + ": manufacturer: " + props.getString(MidiDeviceInfo.PROPERTY_MANUFACTURER) +
-                    ", product: " + props.getString(MidiDeviceInfo.PROPERTY_PRODUCT))
+            // logd("Props for " + info.id + ": manufacturer: " + props.getString(MidiDeviceInfo.PROPERTY_MANUFACTURER) +
+            //        ", product: " + props.getString(MidiDeviceInfo.PROPERTY_PRODUCT))
 
             // Use the last device with midi signals
             // TODO: This assumes Android registers external midi devices as the last device.
@@ -900,10 +900,10 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
             override fun onDeviceAdded(info: MidiDeviceInfo?) {
                 if (null == info) { return }
 
-                logd("A MIDI device has been connected: " + info.id + ", output ports: " + info.outputPortCount)
+                // logd("A MIDI device has been connected: " + info.id + ", output ports: " + info.outputPortCount)
                 val props: Bundle = info.getProperties()
-                logd("Props for " + info.id + ": manufacturer: " + props.getString(MidiDeviceInfo.PROPERTY_MANUFACTURER) +
-                        ", product: " + props.getString(MidiDeviceInfo.PROPERTY_PRODUCT))
+                // logd("Props for " + info.id + ": manufacturer: " + props.getString(MidiDeviceInfo.PROPERTY_MANUFACTURER) +
+                //        ", product: " + props.getString(MidiDeviceInfo.PROPERTY_PRODUCT))
 
                 // If a new device is connected, and it has ports, connect it to the sliders
                 if (info.outputPortCount > 0) {
@@ -912,7 +912,7 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
             }
 
             override fun onDeviceRemoved(info: MidiDeviceInfo?) {
-                logd("A MIDI device has been removed: " + info?.id + ", output ports: " + info?.outputPortCount)
+                // logd("A MIDI device has been removed: " + info?.id + ", output ports: " + info?.outputPortCount)
 
                 if (vulkanViewModel.currentMidiDevice >= 0
                     && info != null) {
@@ -925,27 +925,27 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
     }
 
     fun connectMidiDeviceToSliders(activity: MainActivity, info: MidiDeviceInfo) {
-        logd("MIDI: In connectMidiDeviceToSliders")
+        // logd("MIDI: In connectMidiDeviceToSliders")
         if (vulkanViewModel.currentMidiDevice >= 0
             && vulkanViewModel.currentMidiDevice != info.id) {
             disconnectMidiDeviceFromSliders(info)
         }
 
         // Open the device
-        logd("MIDI: proceeding to open MIDI device")
+        // logd("MIDI: proceeding to open MIDI device")
         midiManager.openDevice(info, object: MidiManager.OnDeviceOpenedListener {
             override fun onDeviceOpened(device: MidiDevice?) {
-                logd("MIDI: device opened.")
+                // logd("MIDI: device opened.")
                 vulkanViewModel.currentOpenMidiDevice = device
 
                 if (null != device) {
                     vulkanViewModel.currentMidiDevice = info.id
                     val portIndex = getFirstMidiOutputPortIndex(info)
-                    logd("MIDI: First output port index: " + portIndex)
+                    // logd("MIDI: First output port index: " + portIndex)
                     if (portIndex != -1) {
-                        logd("MIDI: opening output port")
+                        // logd("MIDI: opening output port")
                         val outputPort: MidiOutputPort = device.openOutputPort(portIndex)
-                        logd("MIDI: connecting slider receiver!")
+                        // logd("MIDI: connecting slider receiver!")
                         outputPort.onConnect(MidiSliderReceiver(activity));
                     }
                 }
@@ -1010,7 +1010,7 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
     class MidiSliderReceiver(val activity: MainActivity): MidiReceiver() {
         override fun onSend(msg: ByteArray?, offset: Int, count: Int, timestamp: Long) {
             if (null == msg) {
-                logd("NULL MIDI message received")
+                // logd("NULL MIDI message received")
             } else {
 
 //                logd("Received a MIDI message.")
@@ -1032,13 +1032,13 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
                     if ((currentInt and 0b10000000) != 0){
 
                         if (currentInt == 0b11110000) {
-                            logd("System message start, let's ignore it...")
+                            // logd("System message start, let's ignore it...")
                             systemMessage = true
                             i++
                             continue
                         }
                         if (currentInt == 0b11110111) {
-                            logd("System message end.")
+                            // logd("System message end.")
                             systemMessage = false
                             i++
                             continue
@@ -1101,13 +1101,13 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
                                 MIDI_ID_AKAI_BUTTON -> {
                                     if (levelInt == MIDI_ID_AKAI_BUTTON_ON_VALUE) {
                                         activity.runOnUiThread {
-                                            logd("MIDI BUTTON CLICK")
+                                           // logd("MIDI BUTTON CLICK")
 //                                            activity.button_shutter.callOnClick()
                                         }
                                     }
                                 }
                                else -> {
-                                    logd("Midi controller: " + controllerIdInt + " ajusted to value: " + levelInt)
+                                    // logd("Midi controller: " + controllerIdInt + " ajusted to value: " + levelInt)
                                 }
                             }
                         } else {
@@ -1147,7 +1147,7 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
                                     }
                                 }
                                 else -> {
-                                    logd("Midi controller: " + controllerIdInt + " ajusted to value: " + levelInt)
+                                    // logd("Midi controller: " + controllerIdInt + " ajusted to value: " + levelInt)
                                 }
 
                             }

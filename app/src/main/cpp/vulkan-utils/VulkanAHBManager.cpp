@@ -18,9 +18,9 @@
 #include "vulkan_utils.h"
 
 VulkanAHBManager::~VulkanAHBManager() {
-    // Call destructor for all the created VulkanAHardwareBufferImages
+    // Delete for all the created VulkanAHardwareBufferImages
     for (auto item : ahb_map) {
-        item.second->~VulkanAHardwareBufferImage();
+        delete item.second;
     }
 }
 

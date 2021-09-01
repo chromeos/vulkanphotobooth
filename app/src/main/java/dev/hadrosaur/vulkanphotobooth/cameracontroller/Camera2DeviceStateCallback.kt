@@ -45,6 +45,7 @@ class Camera2DeviceStateCallback(
      * Camera device has been closed.
      */
     override fun onClosed(camera: CameraDevice) {
+        // logd("Camera has been closed correctly.")
 
         params.isOpen = false
         params.isClosing = false;
