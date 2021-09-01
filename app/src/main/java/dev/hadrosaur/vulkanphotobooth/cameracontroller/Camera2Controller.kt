@@ -18,6 +18,8 @@ package dev.hadrosaur.vulkanphotobooth.cameracontroller
 
 import android.content.Context
 import android.hardware.camera2.*
+import android.os.Handler
+import android.os.Looper
 import android.view.Surface
 import dev.hadrosaur.vulkanphotobooth.*
 import dev.hadrosaur.vulkanphotobooth.MainActivity.Companion.vulkanViewModel
@@ -42,10 +44,13 @@ fun camera2OpenCamera(activity: MainActivity, params: CameraParams?) {
     if (null == params)
         return
 
-    // The camera has not finished closing, wait for it to finish before re-opening
-    // Possible orientation/resize event
-    while (params.isClosing) {
-        sleep(20)
+    // The camera has not finished closing, possibly due to an orientation/resize event
+    // Schedule the camera open in the future to allow for the camera to close properly
+    if (params.isClosing) {
+        Handler(Looper.getMainLooper()).postDelayed({
+            camera2OpenCamera(activity, params)
+        }, 20)
+        return
     }
 
     if (params.isPreviewing) {
@@ -308,7 +313,7 @@ fun camera2CloseCamera(params: CameraParams?) {
     if (params == null)
         return
 
-    logd("closePreviewAndCamera: " + params.id)
+    logd("closePreviewAndCamera: id: ${params.id}, isPreviewing: ${params.isPreviewing},  isStopRequested: ${params.previewStopRequested}")
     if (params.isPreviewing && !params.previewStopRequested) {
         params.cameraCloseRequested = true
         params.previewStopRequested = true

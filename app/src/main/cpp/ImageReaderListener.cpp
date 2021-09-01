@@ -36,14 +36,12 @@ bool ImageReaderListener::gif_being_encoded = false;
 bool ImageReaderListener::gif_requested = false;
 int ImageReaderListener::gif_frames_captured = 0;
 
-ImageReaderListener::ImageReaderListener(VulkanInstance *instance, VulkanImageRenderer *renderer, FilterParams *filterParams, ANativeWindow *outputWindow) {
+ImageReaderListener::ImageReaderListener(VulkanInstance *instance, VulkanImageRenderer *renderer, VulkanAHBManager *vahbManager, FilterParams *filterParams, ANativeWindow *outputWindow) {
     mInstance = instance;
     mRenderer = renderer;
+    mVahbManager = vahbManager;
     mFilterParams = filterParams;
     mMainOutputWindow = outputWindow;
-
-    // Set up AHB Manager
-    vahb_manager.setVulkanInstance(instance);
 
     // Create ring buffer for GIF creation
     gifRingBuffer = new RingBuffer<uint32_t *>(NUM_GIF_FRAMES);
@@ -57,7 +55,6 @@ void ImageReaderListener::onImageAvailableCallback(void* obj, AImageReader* read
     listener->onImageAvailable(obj, reader);
 }
 
-
 /**
  * When a new image is available, acquire it, render it, and free it
  *
@@ -65,7 +62,6 @@ void ImageReaderListener::onImageAvailableCallback(void* obj, AImageReader* read
  * @param reader The ImageReader for the camera
  */
 void ImageReaderListener::onImageAvailable(void* obj, AImageReader* reader) {
-
     // If the SurfaceView (Kotlin) is not yet created or has been destroyed, do not try to write to it
     if (!surface_ready) { return;}
 
@@ -116,7 +112,7 @@ void ImageReaderListener::onImageAvailable(void* obj, AImageReader* reader) {
     ATrace_endSection();
 
     // Get/add the corresponding VulkanAHardwareBuffer from the hashmap
-    VulkanAHardwareBufferImage *vkAHB = vahb_manager.getVulkanAHB(ahb);
+    VulkanAHardwareBufferImage *vkAHB = mVahbManager->getVulkanAHB(ahb);
 
     // The first time an image is received, create the render pipeline, afterward re-use the same pipeline
     if (!mRenderer->isPipelineInitialized) {
