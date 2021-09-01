@@ -44,8 +44,7 @@ public:
     RingBuffer<uint32_t *> *gifRingBuffer;
     static int gif_frames_captured; // Counter for # frames captured for GIF so far
 
-    ImageReaderListener(VulkanInstance *instance, VulkanImageRenderer *renderer, FilterParams *filterParams, ANativeWindow *outputWindow);
-    VulkanAHBManager vahb_manager;
+    ImageReaderListener(VulkanInstance *instance, VulkanImageRenderer *renderer, VulkanAHBManager *vahbManager, FilterParams *filterParams, ANativeWindow *outputWindow);
 
     static void onImageAvailableCallback(void* obj, AImageReader* reader);
     void onImageAvailable(void* obj, AImageReader* reader);
@@ -55,6 +54,7 @@ private:
     VulkanInstance *mInstance = nullptr;
     VulkanImageRenderer *mRenderer = nullptr;
     FilterParams *mFilterParams = nullptr;
+    VulkanAHBManager *mVahbManager = nullptr;
     ANativeWindow *mMainOutputWindow = nullptr; // The output surface to grab images from for gif
     int mOnImageAvailableCount = 0;
 
