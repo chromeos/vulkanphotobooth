@@ -22,6 +22,27 @@ preview stream and then capture a shareable animation sequence.
 Optional:
 * MIDI controller with 6 sliders/knobs and one button
 
+## Building
+Currently this uses a staticly built and linked version of shaderc and
+a fixed NDK version. There are better ways of doing this and I hope to
+update the project to include one soon. In the meantime, to "just get it
+to build" please follow the following steps:
+* Import the project into Android Studio (2020.3.1 Arctic Fox or later)
+  * Update and gradle or library dependencies (automatic links should work)
+* Install NDK 22.1.7171670:
+  * Go to Tools->SDK manager->SDK Tools tab
+  * Click checkbox "show package details" to list all versions
+  * Expand "NDK Side-by-Side"
+  * Check version 22.1.7171670
+  * Click apply to download install
+* Update local.properties to have: ndk.dir=/home/YOURHOMEDIR/Android/Sdk/ndk/22.1.7171670
+* Build shaderc (replace SDK/NDK directories as needed):
+  * Go to the command line
+  * cd ~/Android/Sdk/ndk/22.1.7171670/sources/third_party/shaderc
+  * ../../../ndk-build NDK_PROJECT_PATH=. APP_BUILD_SCRIPT=Android.mk APP_STL:=c++_static APP_ABI=all libshaderc_combined
+* Note: In build.gradle, `abiFilters` is set to build ARM32, ARM65, x86_32, and x86_64 ABIs to maximize device support. You may adjust this if required.
+* Build project
+
 ## LICENSE
 
 ***
