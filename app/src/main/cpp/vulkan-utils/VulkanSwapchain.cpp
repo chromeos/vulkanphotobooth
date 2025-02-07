@@ -204,7 +204,8 @@ bool VulkanSwapchain::init(VkSurfaceKHR *vkSurface, VkSurfaceCapabilitiesKHR *su
                 .pNext = nullptr,
                 .flags = 0,
                 .imageType = VK_IMAGE_TYPE_2D,
-                .format =VK_FORMAT_R8G8B8A8_UNORM,
+//                .format = VK_FORMAT_R8G8B8A8_UNORM,
+                .format = VK_FORMAT_R5G6B5_UNORM_PACK16,
 //                .format = VK_FORMAT_A8B8G8R8_UINT_PACK32,
                 .extent =
                         {

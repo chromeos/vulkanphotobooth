@@ -15,8 +15,7 @@
   ~ limitations under the License.
   -->
 
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="dev.hadrosaur.vulkanphotobooth">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- Camera permissions are required as well as the ability to save captures to disk -->
     <uses-permission android:name="android.permission.CAMERA"/>
@@ -42,7 +41,8 @@
         </activity>
         <activity android:name="dev.hadrosaur.vulkanphotobooth.LeftPanelActivity">
         </activity>
-        <activity android:name="dev.hadrosaur.vulkanphotobooth.MainActivity">
+        <activity android:name="dev.hadrosaur.vulkanphotobooth.MainActivity"
+                android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 

@@ -21,13 +21,13 @@ plugins {
 }
 
 android {
-    compileSdkVersion 30
     defaultConfig {
         applicationId "dev.hadrosaur.vulkanphotobooth"
+        compileSdkVersion 35
         minSdkVersion 27
-        targetSdkVersion 30
-        versionCode 52
-        versionName "1.52"
+        targetSdkVersion 35
+        versionCode 54
+        versionName "1.54"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
             cmake {
@@ -43,9 +43,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    ndkVersion = "22.1.7171670"
+
     sourceSets {
         main {
-            jni.srcDirs = ['.']
             jniLibs.srcDir "$ndkDirectory/sources/third_party/vulkan/src/build-android/jniLibs"
         }
     }
@@ -59,6 +61,7 @@ android {
         sourceCompatibility 1.8
         targetCompatibility 1.8
     }
+    namespace 'dev.hadrosaur.vulkanphotobooth'
 }
 
 dependencies {
@@ -79,8 +82,4 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycle_version"
-
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 }

@@ -171,7 +171,6 @@ void cleanup() {
 void updateFramerateUI(double current_fps, double vulkan_render_time) {
     JNIEnv *jni_env = getEnv();
 
-
     jclass clazz = findClass("dev/hadrosaur/vulkanphotobooth/MainActivity");
     jmethodID updateFramerateText = jni_env->GetStaticMethodID(clazz, "updateFramerateText", "(II)V");
     jni_env->CallStaticVoidMethod(clazz, updateFramerateText, int(current_fps * 10), int(vulkan_render_time));
@@ -197,7 +196,7 @@ Java_dev_hadrosaur_vulkanphotobooth_MainActivity_initializeNative(
     NUM_DISPLAYS = (uint32_t ) jNumDisplays;
 
     if (!InitializeVulkan()) {
-        loge("Failied initializing Vulkan!");
+        loge("Failed initializing Vulkan!");
         return false;
     }
 
@@ -240,8 +239,10 @@ Java_dev_hadrosaur_vulkanphotobooth_CameraUtilsKt_createPreviewImageReader(
 
     // Create a VulkanImageRenderer with the actual width/height of the AHardwareBuffer.
     // Free'd in cleanup()
+//    renderer = new VulkanImageRenderer(vulkan_instance, NUM_DISPLAYS, width, height,
+//                                   VK_FORMAT_R8G8B8A8_UNORM, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR);
     renderer = new VulkanImageRenderer(vulkan_instance, NUM_DISPLAYS, width, height,
-                                   VK_FORMAT_R8G8B8A8_UNORM, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR);
+                                       VK_FORMAT_R5G6B5_UNORM_PACK16, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR);
 }
 
 extern "C" JNIEXPORT void JNICALL

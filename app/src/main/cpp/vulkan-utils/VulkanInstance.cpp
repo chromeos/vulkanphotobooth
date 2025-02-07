@@ -133,7 +133,7 @@ bool VulkanInstance::init() {
     deviceExt.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
     deviceExt.push_back(VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME);
     // deviceExt.push_back(VK_KHR_UNIFORM_BUFFER_STANDARD_LAYOUT_EXTENSION_NAME); // Doesn't exist yet
-    deviceExt.push_back(VK_EXT_QUEUE_FAMILY_FOREIGN_EXTENSION_NAME); // FOREIGN can slower than EXTERNAL
+    // deviceExt.push_back(VK_EXT_QUEUE_FAMILY_FOREIGN_EXTENSION_NAME); // FOREIGN can slower than EXTERNAL
 
     std::vector<VkExtensionProperties> supportedDeviceExtensions;
     ASSERT(enumerateDeviceExtensions(mGpu, &supportedDeviceExtensions));

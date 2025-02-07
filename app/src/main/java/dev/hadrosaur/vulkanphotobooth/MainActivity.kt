@@ -574,6 +574,16 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
      * Check if we have been granted the needed camera and file-system permissions
      */
     fun checkPermissions(): Boolean {
+
+        val permissionsCode = REQUEST_FILE_WRITE_PERMISSION
+        val permissions = arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED
+            && ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, permissions, permissionsCode)
+            return false
+        }
+        /*
+
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
             != PackageManager.PERMISSION_GRANTED) {
 
@@ -593,7 +603,7 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
             )
             return false
         }
-
+        */
         return true
     }
 

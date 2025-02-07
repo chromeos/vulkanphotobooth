@@ -24,8 +24,8 @@
 #include "vulkan_utils.h"
 
 // For validation we should use FOREIGN here, but EXTERNAL can be faster.
-// const uint32_t VULKAN_QUEUE_FAMILY = VK_QUEUE_FAMILY_EXTERNAL_KHR;
-const uint32_t VULKAN_QUEUE_FAMILY = VK_QUEUE_FAMILY_FOREIGN_EXT;
+ const uint32_t VULKAN_QUEUE_FAMILY = VK_QUEUE_FAMILY_EXTERNAL_KHR;
+//const uint32_t VULKAN_QUEUE_FAMILY = VK_QUEUE_FAMILY_FOREIGN_EXT;
 
 VulkanImageRenderer::VulkanImageRenderer(VulkanInstance *init,  uint32_t num_displays,
         uint32_t width, uint32_t height,
