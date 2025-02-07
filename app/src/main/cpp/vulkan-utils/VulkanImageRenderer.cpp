@@ -638,8 +638,9 @@ double VulkanImageRenderer::renderImageAndReadback(VulkanAHardwareBufferImage *v
         // Wait until the swapchain image is ready to use
         VK_CALL(vkWaitForFences(mInstance->device(), 1,
                                 &mSwapchains[surface_i].mSwapchainFences[mSwapchains[surface_i].mSwapchainFenceIndex],
-                                true, UINT64_MAX));
+                                VK_TRUE, UINT64_MAX));
         ATrace_endSection();
+        // Wait for any Vulkan rendering to finish
 
 //        SwapchainImage *swapchainImage = &mSwapchains[surface_i].mSwapchainImages[mSwapchains[surface_i].mSwapchainIndex];
 
@@ -885,6 +886,7 @@ double VulkanImageRenderer::renderImageAndReadback(VulkanAHardwareBufferImage *v
         };
         VK_CALL(vkQueueSubmit(mInstance->queue(), 1, &queueSubmitInfo, swapchainImage->imagePreviousFence));
         VK_CALL(vkWaitForFences(mInstance->device(), 1, &swapchainImage->imagePreviousFence, true, UINT64_MAX));
+        VK_CALL(vkResetFences(mInstance->device(), 1, &swapchainImage->imagePreviousFence));
 
         ATrace_endSection();
     }
