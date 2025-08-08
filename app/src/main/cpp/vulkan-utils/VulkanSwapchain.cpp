@@ -357,8 +357,8 @@ bool VulkanSwapchain::init(VkSurfaceKHR *vkSurface, VkSurfaceCapabilitiesKHR *su
                 .imageView = imageView,
                 .presentSemaphore = presentSemaphore,
                 .framebuffer = framebuffer,
-                .imageFence = imageFence,
                 .imageFenceSet = false,
+                .imageFence = imageFence,
 
                 .imageCopy = imageCopy,
                 .imageCopyMemory = imageCopyMemory,

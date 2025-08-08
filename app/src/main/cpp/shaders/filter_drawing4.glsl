@@ -60,7 +60,7 @@ vec3 color_dither(vec3 color_in, vec2 abs_pos, vec3 color_step) {
 // Whatever the dominant colour is (RGB), pump it up to make everything more cartoony
 vec3 primary_colors(vec3 color_in) {
     if ((color_in.r >= color_in.g)
-        && (color_in.r >= color_in.b)) {
+    && (color_in.r >= color_in.b)) {
         // Red is biggest, pump it up
         color_in.r = sqrt(sqrt(color_in.r));
     } else {
@@ -109,26 +109,26 @@ float convolve(mat3 kernel, mat3 pixels) {
 // Basic sobel edge filter. See http://en.wikipedia.org/wiki/Sobel_operator
 float sobel(sampler2D sampler_2d, vec2 tex_coord, vec2 sobel_distance) {
     const mat3 SOBEL_KERNEL_X = mat3(
-        1.0, 0.0, -1.0,
-        2.0, 0.0, -2.0,
-        1.0, 0.0, -1.0);
+    1.0, 0.0, -1.0,
+    2.0, 0.0, -2.0,
+    1.0, 0.0, -1.0);
 
     const mat3 SOBEL_KERNEL_Y = mat3(
-        1.0, 2.0, 1.0,
-        0.0, 0.0, 0.0,
-        -1.0, -2.0, -1.0);
+    1.0, 2.0, 1.0,
+    0.0, 0.0, 0.0,
+    -1.0, -2.0, -1.0);
 
     // Sample given coord and 8 pixels surrounding it
     mat3 pixels = mat3(
-        length(texture(sampler_2d, tex_coord + vec2(-sobel_distance.x, sobel_distance.y)).rgb),
-        length(texture(sampler_2d, tex_coord + vec2(0, sobel_distance.y)).rgb),
-        length(texture(sampler_2d, tex_coord + sobel_distance).rgb),
-        length(texture(sampler_2d, tex_coord + vec2(-sobel_distance.x, 0)).rgb),
-        length(texture(sampler_2d, tex_coord).rgb),
-        length(texture(sampler_2d, tex_coord + vec2(sobel_distance.x, 0)).rgb),
-        length(texture(sampler_2d, tex_coord + -sobel_distance).rgb),
-        length(texture(sampler_2d, tex_coord + vec2(0,-sobel_distance.y)).rgb),
-        length(texture(sampler_2d, tex_coord + vec2(sobel_distance.x,-sobel_distance.y)).rgb));
+    length(texture(sampler_2d, tex_coord + vec2(-sobel_distance.x, sobel_distance.y)).rgb),
+    length(texture(sampler_2d, tex_coord + vec2(0, sobel_distance.y)).rgb),
+    length(texture(sampler_2d, tex_coord + sobel_distance).rgb),
+    length(texture(sampler_2d, tex_coord + vec2(-sobel_distance.x, 0)).rgb),
+    length(texture(sampler_2d, tex_coord).rgb),
+    length(texture(sampler_2d, tex_coord + vec2(sobel_distance.x, 0)).rgb),
+    length(texture(sampler_2d, tex_coord + -sobel_distance).rgb),
+    length(texture(sampler_2d, tex_coord + vec2(0,-sobel_distance.y)).rgb),
+    length(texture(sampler_2d, tex_coord + vec2(sobel_distance.x,-sobel_distance.y)).rgb));
 
     vec2 result = vec2(convolve(SOBEL_KERNEL_X, pixels), convolve(SOBEL_KERNEL_Y, pixels));
     float level = clamp(length(result), 0.0, 1.0);

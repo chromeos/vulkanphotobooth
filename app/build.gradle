@@ -17,15 +17,14 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
-    id 'kotlin-android-extensions'
 }
 
 android {
     defaultConfig {
         applicationId "dev.hadrosaur.vulkanphotobooth"
-        compileSdkVersion 35
+        compileSdkVersion 36
         minSdkVersion 27
-        targetSdkVersion 35
+        targetSdkVersion 36
         versionCode 54
         versionName "1.54"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -36,6 +35,17 @@ android {
 //                abiFilters 'arm64-v8a'
             }
         }
+        buildFeatures {
+            viewBinding true
+        }
+        compileOptions {
+            sourceCompatibility JavaVersion.VERSION_17
+            targetCompatibility JavaVersion.VERSION_17
+        }
+
+        kotlinOptions {
+            jvmTarget = '17'
+        }
     }
     buildTypes {
         release {
@@ -44,7 +54,7 @@ android {
         }
     }
 
-    ndkVersion = "22.1.7171670"
+    ndkVersion = "27.0.12077973"
 
     sourceSets {
         main {
@@ -54,14 +64,15 @@ android {
     externalNativeBuild {
         cmake {
             path "src/main/cpp/CMakeLists.txt"
-            version "3.10.2"
+            version "3.22.1"
         }
     }
-    compileOptions {
-        sourceCompatibility 1.8
-        targetCompatibility 1.8
-    }
     namespace 'dev.hadrosaur.vulkanphotobooth'
+    compileSdk 36
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
 }
 
 dependencies {
@@ -69,14 +80,14 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
     // Jetpack dependencies
-    def lifecycle_version = "2.2.0"
-    def core_version = "1.2.0"
+    def lifecycle_version = "2.9.2"
+    def core_version = "1.16.0"
 
     implementation "androidx.core:core-ktx:$core_version"
     implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
-    implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation "androidx.constraintlayout:constraintlayout:2.0.0-beta4"
-    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0-beta01'
+    implementation 'androidx.appcompat:appcompat:1.7.1'
+    implementation "androidx.constraintlayout:constraintlayout:2.2.1"
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
 
     // ViewModel
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"

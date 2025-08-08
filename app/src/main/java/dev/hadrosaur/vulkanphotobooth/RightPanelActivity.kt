@@ -21,7 +21,10 @@ import android.os.Bundle
 import android.view.Surface
 import android.view.SurfaceHolder
 import android.view.View.*
-import kotlinx.android.synthetic.main.activity_right_panel.*
+import dev.hadrosaur.vulkanphotobooth.databinding.ActivityLeftPanelBinding
+import dev.hadrosaur.vulkanphotobooth.databinding.ActivityRightPanelBinding
+
+private lateinit var binding: ActivityRightPanelBinding
 
 /**
  * Activity that manages the right-hand display of 3 displays
@@ -48,8 +51,12 @@ class RightPanelActivity : AppCompatActivity(), SurfaceHolder.Callback {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_right_panel)
-        surface_mirror_right.holder.addCallback(this)
+
+        binding = ActivityRightPanelBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
+
+        binding.surfaceMirrorRight.holder.addCallback(this)
         window.decorView.systemUiVisibility = SYSTEM_UI_FLAG_IMMERSIVE or SYSTEM_UI_FLAG_FULLSCREEN or
                 SYSTEM_UI_FLAG_HIDE_NAVIGATION
     }

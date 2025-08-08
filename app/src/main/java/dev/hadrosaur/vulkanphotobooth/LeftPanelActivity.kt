@@ -21,7 +21,10 @@ import android.os.Bundle
 import android.view.Surface
 import android.view.SurfaceHolder
 import android.view.View.*
-import kotlinx.android.synthetic.main.activity_left_panel.*
+import dev.hadrosaur.vulkanphotobooth.databinding.ActivityLeftPanelBinding
+import dev.hadrosaur.vulkanphotobooth.databinding.ActivityMainBinding
+
+private lateinit var binding: ActivityLeftPanelBinding
 
 /**
  * Activity that manages the left-hand display of 3 displays
@@ -48,8 +51,12 @@ class LeftPanelActivity : AppCompatActivity(), SurfaceHolder.Callback {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_left_panel)
-        surface_mirror_left.holder.addCallback(this)
+
+        binding = ActivityLeftPanelBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
+
+        binding.surfaceMirrorLeft.holder.addCallback(this)
         window.decorView.systemUiVisibility = SYSTEM_UI_FLAG_IMMERSIVE or SYSTEM_UI_FLAG_FULLSCREEN or
                 SYSTEM_UI_FLAG_HIDE_NAVIGATION
     }
