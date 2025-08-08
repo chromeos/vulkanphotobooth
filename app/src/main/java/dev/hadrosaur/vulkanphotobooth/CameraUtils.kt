@@ -23,13 +23,15 @@ import android.hardware.camera2.CameraCharacteristics.SENSOR_INFO_ACTIVE_ARRAY_S
 import android.os.Build
 import android.view.Surface
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.android.synthetic.main.activity_main.*
 import dev.hadrosaur.vulkanphotobooth.MainActivity.Companion.FIXED_FOCUS_DISTANCE
 import dev.hadrosaur.vulkanphotobooth.MainActivity.Companion.allCameraParams
 import dev.hadrosaur.vulkanphotobooth.MainActivity.Companion.logd
 import dev.hadrosaur.vulkanphotobooth.cameracontroller.Camera2CaptureSessionCallback
 import dev.hadrosaur.vulkanphotobooth.cameracontroller.Camera2DeviceStateCallback
+import dev.hadrosaur.vulkanphotobooth.databinding.ActivityMainBinding
 import java.util.*
+
+private lateinit var binding: ActivityMainBinding
 
 /** The focus mechanism to request for captures */
 enum class FocusMode(private val mode: String) {
@@ -47,6 +49,9 @@ enum class FocusMode(private val mode: String) {
  */
 fun initializeCameras(activity: MainActivity) {
     val manager = activity.getSystemService(AppCompatActivity.CAMERA_SERVICE) as CameraManager
+
+    binding = ActivityMainBinding.inflate(activity.layoutInflater)
+
     try {
         val numCameras = manager.cameraIdList.size
 
@@ -112,7 +117,7 @@ fun initializeCameras(activity: MainActivity) {
                 camera2CaptureSessionCallback =
                     Camera2CaptureSessionCallback(activity, this)
 
-                previewSurfaceView = activity.surface_mirror
+                previewSurfaceView = binding.surfaceMirror
 
                 if (Build.VERSION.SDK_INT >= 28) {
                     physicalCameras = cameraChars.physicalCameraIds

@@ -43,7 +43,6 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
-import kotlinx.android.synthetic.main.activity_main.*
 import dev.hadrosaur.vulkanphotobooth.cameracontroller.camera2CloseCamera
 import dev.hadrosaur.vulkanphotobooth.cameracontroller.camera2OpenCamera
 import dev.hadrosaur.vulkanphotobooth.cameracontroller.camera2StartPreview
@@ -56,8 +55,11 @@ import kotlin.concurrent.thread
 import android.content.pm.ConfigurationInfo
 
 import android.app.ActivityManager
-
-
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
+import dev.hadrosaur.vulkanphotobooth.databinding.ActivityMainBinding
 
 
 // Arbitrary ids to keep track of permission requests
@@ -101,6 +103,8 @@ private const val MIDI_ID_AKAI_SLIDER_6 = 0x06;
 private const val MIDI_ID_AKAI_BUTTON = 0x40;
 private const val MIDI_ID_AKAI_BUTTON_ON_VALUE = 0x7F;
 private const val MIDI_ID_AKAI_BUTTON_OFF_VALUE = 0x00;
+
+private lateinit var binding: ActivityMainBinding
 
 class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
     override fun onPause() {
@@ -270,7 +274,10 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
+
         vulkanViewModel = ViewModelProvider(this).get(VulkanViewModel::class.java)
         allCameraParams = vulkanViewModel.getAllCameraParams()
 
@@ -295,17 +302,17 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
 
                     runOnUiThread {
                         if (progress < 0f) {
-                            progress_gif.isIndeterminate = true
+                            binding.progressGif.isIndeterminate = true
                             gifSpinner.start()
                         } else if (progress > 1f) {
                             gifSpinner.setStartEndTrim(0f, 1f)
-                            progress_gif.isIndeterminate = false
-                            progress_gif.setProgress(100, false)
+                            binding.progressGif.isIndeterminate = false
+                            binding.progressGif.setProgress(100, false)
 //                            gifSpinner.progressRotation = 1f
                         } else {
                             gifSpinner.setStartEndTrim(0f, progress)
-                            progress_gif.isIndeterminate = false
-                            progress_gif.setProgress((progress * 100).toInt(), false)
+                            binding.progressGif.isIndeterminate = false
+                            binding.progressGif.setProgress((progress * 100).toInt(), false)
 //                            gifSpinner.progressRotation = progress
                         }
                     }
@@ -332,23 +339,23 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
 
                         runOnUiThread {
                             // Save complete, restore shutter button
-                            button_shutter.setImageResource(R.drawable.filter_button_enabled)
-                            progress_gif.visibility = GONE
-                            progress_gif.isIndeterminate = false;
-                            progress_gif.progress = 0
+                            binding.buttonShutter.setImageResource(R.drawable.filter_button_enabled)
+                            binding.progressGif.visibility = GONE
+                            binding.progressGif.isIndeterminate = false;
+                            binding.progressGif.progress = 0
                             gifSpinner.stop()
 
                             // TODO: this hack assumes chromeboxes do not have on-screen controls &
                             // phones do. Phones may have MIDI controllers and chromeboxes not.
                             // Handles this properly (maintain current on-screen button state).
                             if (!isChromebox()) {
-                                seek_input1.visibility = VISIBLE
-                                seek_input2.visibility = VISIBLE
-                                seek_input3.visibility = VISIBLE
-                                seek_input4.visibility = VISIBLE
-                                seek_input5.visibility = VISIBLE
-                                seek_input6.visibility = VISIBLE
-                                button_shutter.visibility = VISIBLE
+                                binding.seekInput1.visibility = VISIBLE
+                                binding.seekInput2.visibility = VISIBLE
+                                binding.seekInput3.visibility = VISIBLE
+                                binding.seekInput4.visibility = VISIBLE
+                                binding.seekInput5.visibility = VISIBLE
+                                binding.seekInput6.visibility = VISIBLE
+                                binding.buttonShutter.visibility = VISIBLE
                             }
                             lockRotation(false)
                         }
@@ -419,15 +426,15 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
 
         vulkanViewModel.getFilterParams().rotation = getCameraImageRotation(this, cameraParams)
 
-        cameraParams.previewSurfaceView = surface_mirror
+        cameraParams.previewSurfaceView = binding.surfaceMirror
         setupImageReader(this, cameraParams)
 
         // Add callbacks to the mirror surfaceview, when it is ready, open the camera
-        surface_mirror.holder.addCallback(this)
+        binding.surfaceMirror.holder.addCallback(this)
 
         // Permissions dialog hack: dialogs can prevent the surface from being created. Once we are done with the
         // permissions dialog, set the surface visibility to true
-        surface_mirror.visibility = VISIBLE
+        binding.surfaceMirror.visibility = VISIBLE
 
         // Check for MIDI support and set up connected MIDI devices
         if (packageManager.hasSystemFeature(PackageManager.FEATURE_MIDI)) {
@@ -445,30 +452,41 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
         updateFilterParams()
 
         // Make full-screen Immersive
-        window.decorView.systemUiVisibility = SYSTEM_UI_FLAG_IMMERSIVE or
-            SYSTEM_UI_FLAG_FULLSCREEN or SYSTEM_UI_FLAG_HIDE_NAVIGATION
+        val windowInsetsController =
+            WindowCompat.getInsetsController(window, window.decorView)
+        windowInsetsController.systemBarsBehavior =
+            WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        ViewCompat.setOnApplyWindowInsetsListener(window.decorView) { view, windowInsets ->
+            if (windowInsets.isVisible(WindowInsetsCompat.Type.navigationBars())
+                || windowInsets.isVisible(WindowInsetsCompat.Type.statusBars())) {
+                    windowInsetsController.hide(WindowInsetsCompat.Type.systemBars())
+                }
+            ViewCompat.onApplyWindowInsets(view, windowInsets)
+        }
+        //window.decorView.systemUiVisibility = SYSTEM_UI_FLAG_IMMERSIVE or
+        //    SYSTEM_UI_FLAG_FULLSCREEN or SYSTEM_UI_FLAG_HIDE_NAVIGATION
 
         // TODO Parameterize SeekBars
 
         // If this is a phone, allow the user to turn on the controls. Otherwise always hide.
 //        if (!isChromebox()) {
-            surface_mirror.setOnClickListener {
-                if (button_shutter.visibility == GONE) {
-                    seek_input1.visibility = VISIBLE
-                    seek_input2.visibility = VISIBLE
-                    seek_input3.visibility = VISIBLE
-                    seek_input4.visibility = VISIBLE
-                    seek_input5.visibility = VISIBLE
-                    seek_input6.visibility = VISIBLE
-                    button_shutter.visibility = VISIBLE
+        binding.surfaceMirror.setOnClickListener {
+                if (binding.buttonShutter.visibility == GONE) {
+                    binding.seekInput1.visibility = VISIBLE
+                    binding.seekInput2.visibility = VISIBLE
+                    binding.seekInput3.visibility = VISIBLE
+                    binding.seekInput4.visibility = VISIBLE
+                    binding.seekInput5.visibility = VISIBLE
+                    binding.seekInput6.visibility = VISIBLE
+                    binding.buttonShutter.visibility = VISIBLE
                 } else {
-                    seek_input1.visibility = GONE
-                    seek_input2.visibility = GONE
-                    seek_input3.visibility = GONE
-                    seek_input4.visibility = GONE
-                    seek_input5.visibility = GONE
-                    seek_input6.visibility = GONE
-                    button_shutter.visibility = GONE
+                    binding.seekInput1.visibility = GONE
+                    binding.seekInput2.visibility = GONE
+                    binding.seekInput3.visibility = GONE
+                    binding.seekInput4.visibility = GONE
+                    binding.seekInput5.visibility = GONE
+                    binding.seekInput6.visibility = GONE
+                    binding.buttonShutter.visibility = GONE
                 }
             }
 //        }
@@ -568,6 +586,7 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
                 return
             }
         }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
     /**
@@ -648,7 +667,7 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
      * Set up the shutter button to kick off GIF creation
      */
     fun setupShutterButton() {
-        button_shutter.setOnClickListener {
+        binding.buttonShutter.setOnClickListener {
             if (!shutter_engaged) {
                 shutter_engaged = true;
 
@@ -656,18 +675,18 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
                 runOnUiThread {
                     lockRotation(true)
 
-                    image_countdown_background.visibility = VISIBLE
-                    image_countdown_text.visibility = VISIBLE
-                    image_countdown_text.setImageResource(R.drawable.digit_3_blue)
-                    progress_gif.visibility = VISIBLE
+                    binding.imageCountdownBackground.visibility = VISIBLE
+                    binding.imageCountdownText.visibility = VISIBLE
+                    binding.imageCountdownText.setImageResource(R.drawable.digit_3_blue)
+                    binding.progressGif.visibility = VISIBLE
 
-                    seek_input1.visibility = GONE
-                    seek_input2.visibility = GONE
-                    seek_input3.visibility = GONE
-                    seek_input4.visibility = GONE
-                    seek_input5.visibility = GONE
-                    seek_input6.visibility = GONE
-                    button_shutter.visibility = GONE
+                    binding.seekInput1.visibility = GONE
+                    binding.seekInput2.visibility = GONE
+                    binding.seekInput3.visibility = GONE
+                    binding.seekInput4.visibility = GONE
+                    binding.seekInput5.visibility = GONE
+                    binding.seekInput6.visibility = GONE
+                    binding.buttonShutter.visibility = GONE
                 }
 
                 // Start the countdown, updating the UI
@@ -678,13 +697,13 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
                         runOnUiThread {
                             when (ms) {
                                 2000 -> {
-                                    image_countdown_text.setImageResource(R.drawable.digit_3_blue)
+                                    binding.imageCountdownText.setImageResource(R.drawable.digit_3_blue)
                                 }
                                 1000 -> {
-                                    image_countdown_text.setImageResource(R.drawable.digit_2_red)
+                                    binding.imageCountdownText.setImageResource(R.drawable.digit_2_red)
                                 }
                                 0 -> {
-                                    image_countdown_text.setImageResource(R.drawable.digit_1_yellow)
+                                    binding.imageCountdownText.setImageResource(R.drawable.digit_1_yellow)
                                 }
                             }
                         }
@@ -693,8 +712,8 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
                     // Countdown finished, start taking photos
                     override fun onFinish() {
                         runOnUiThread {
-                            image_countdown_text.visibility = GONE
-                            image_countdown_background.visibility = GONE
+                            binding.imageCountdownText.visibility = GONE
+                            binding.imageCountdownBackground.visibility = GONE
                         }
 
                         gifFilepath = generateGifFilepath()
@@ -705,10 +724,10 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
                                 gifSpinner.strokeWidth = 10f
                                 gifSpinner.stop()
                                 gifSpinner.setStartEndTrim(0f, 0f)
-                                progress_gif.visibility = VISIBLE
-                                progress_gif.setProgress(0)
+                                binding.progressGif.visibility = VISIBLE
+                                binding.progressGif.setProgress(0)
 
-                                button_shutter.setImageDrawable(gifSpinner)
+                                binding.buttonShutter.setImageDrawable(gifSpinner)
                             }
                             createGif(gifFilepath) // Tell native to start taking photos
                         }
@@ -720,12 +739,12 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
 
     // Match UI buttons to desired filters
     fun setupFilterButtons() {
-        setupFilterButton(button_filter_one, 0)
-        setupFilterButton(button_filter_two, 1)
-        setupFilterButton(button_filter_three, 2)
-        setupFilterButton(button_filter_four, 3)
-        setupFilterButton(button_filter_five, 4)
-        setupFilterButton(button_filter_six, 5)
+        setupFilterButton(binding.buttonFilterOne, 0)
+        setupFilterButton(binding.buttonFilterTwo, 1)
+        setupFilterButton(binding.buttonFilterThree, 2)
+        setupFilterButton(binding.buttonFilterFour, 3)
+        setupFilterButton(binding.buttonFilterFive, 4)
+        setupFilterButton(binding.buttonFilterSix, 5)
     }
 
     // Setup button listners to engaged the appropriate filter
@@ -805,8 +824,8 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
      * Update the current on-screen FPS and Render text
      */
     fun updateFpsText(fps: Float, renderTime: Int) {
-        text_fps.text = "fps: " + fps
-        text_render.text = "render: " + renderTime + "ms"
+        binding.textFps.text = "fps: " + fps
+        binding.textRender.text = "render: " + renderTime + "ms"
     }
 
     /**
@@ -814,33 +833,33 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
      */
     fun setupFilterSliders() {
         // TODO: parameterize this so an array with slider # -> filter # can be used
-        seek_input1.setOnSeekBarChangeListener(FilterSeekBarListener(this, 0, button_filter_one))
-        seek_input2.setOnSeekBarChangeListener(FilterSeekBarListener(this, 1, button_filter_two))
-        seek_input3.setOnSeekBarChangeListener(FilterSeekBarListener(this, 2, button_filter_three))
-        seek_input4.setOnSeekBarChangeListener(FilterSeekBarListener(this, 3, button_filter_four))
-        seek_input5.setOnSeekBarChangeListener(FilterSeekBarListener(this, 4, button_filter_five))
-        seek_input6.setOnSeekBarChangeListener(FilterSeekBarListener(this, 5, button_filter_six))
+        binding.seekInput1.setOnSeekBarChangeListener(FilterSeekBarListener(this, 0, binding.buttonFilterOne))
+        binding.seekInput2.setOnSeekBarChangeListener(FilterSeekBarListener(this, 1, binding.buttonFilterTwo))
+        binding.seekInput3.setOnSeekBarChangeListener(FilterSeekBarListener(this, 2, binding.buttonFilterThree))
+        binding.seekInput4.setOnSeekBarChangeListener(FilterSeekBarListener(this, 3, binding.buttonFilterFour))
+        binding.seekInput5.setOnSeekBarChangeListener(FilterSeekBarListener(this, 4, binding.buttonFilterFive))
+        binding.seekInput6.setOnSeekBarChangeListener(FilterSeekBarListener(this, 5, binding.buttonFilterSix))
 
         // Add livedata observers
         vulkanViewModel.getFilterParamsLiveData().observe(this, androidx.lifecycle.Observer {
                 updatedFilterParams ->
             runOnUiThread {
-                seek_input1.setProgress(updatedFilterParams.seek_values[0], true)
-                seek_input2.setProgress(updatedFilterParams.seek_values[1], true)
-                seek_input3.setProgress(updatedFilterParams.seek_values[2], true)
-                seek_input4.setProgress(updatedFilterParams.seek_values[3], true)
-                seek_input5.setProgress(updatedFilterParams.seek_values[4], true)
-                seek_input6.setProgress(updatedFilterParams.seek_values[5], true)
+                binding.seekInput1.setProgress(updatedFilterParams.seek_values[0], true)
+                binding.seekInput2.setProgress(updatedFilterParams.seek_values[1], true)
+                binding.seekInput3.setProgress(updatedFilterParams.seek_values[2], true)
+                binding.seekInput4.setProgress(updatedFilterParams.seek_values[3], true)
+                binding.seekInput5.setProgress(updatedFilterParams.seek_values[4], true)
+                binding.seekInput6.setProgress(updatedFilterParams.seek_values[5], true)
             }
         })
 
         // Restore previous values
-        seek_input1.setProgress(vulkanViewModel.getFilterParams().seek_values[0], true)
-        seek_input2.setProgress(vulkanViewModel.getFilterParams().seek_values[1], true)
-        seek_input3.setProgress(vulkanViewModel.getFilterParams().seek_values[2], true)
-        seek_input4.setProgress(vulkanViewModel.getFilterParams().seek_values[3], true)
-        seek_input5.setProgress(vulkanViewModel.getFilterParams().seek_values[4], true)
-        seek_input6.setProgress(vulkanViewModel.getFilterParams().seek_values[5], true)
+        binding.seekInput1.setProgress(vulkanViewModel.getFilterParams().seek_values[0], true)
+        binding.seekInput2.setProgress(vulkanViewModel.getFilterParams().seek_values[1], true)
+        binding.seekInput3.setProgress(vulkanViewModel.getFilterParams().seek_values[2], true)
+        binding.seekInput4.setProgress(vulkanViewModel.getFilterParams().seek_values[3], true)
+        binding.seekInput5.setProgress(vulkanViewModel.getFilterParams().seek_values[4], true)
+        binding.seekInput6.setProgress(vulkanViewModel.getFilterParams().seek_values[5], true)
         updateFilterParams();
     }
 
@@ -1112,7 +1131,7 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
                                     if (levelInt == MIDI_ID_AKAI_BUTTON_ON_VALUE) {
                                         activity.runOnUiThread {
                                            // logd("MIDI BUTTON CLICK")
-//                                            activity.button_shutter.callOnClick()
+//                                            activity.binding.buttonShutter.callOnClick()
                                         }
                                     }
                                 }
@@ -1145,14 +1164,14 @@ class MainActivity : AppCompatActivity(), SurfaceHolder.Callback {
                                 MIDI_ID_BUTTON -> {
                                     if (levelInt == MIDI_ID_BUTTON_OFF_VALUE) {
                                         activity.runOnUiThread {
-                                            activity.button_shutter.callOnClick()
+                                            binding.buttonShutter.callOnClick()
                                         }
                                     }
                                 }
                                 MIDI_ID_KEYSTATION_BUTTON -> {
                                     if (levelInt == MIDI_ID_KEYSTATION_BUTTON_OFF_VALUE) {
                                         activity.runOnUiThread {
-                                            activity.button_shutter.callOnClick()
+                                            binding.buttonShutter.callOnClick()
                                         }
                                     }
                                 }

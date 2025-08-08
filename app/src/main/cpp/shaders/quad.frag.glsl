@@ -20,11 +20,11 @@
 precision highp float;
 
 #include "../third_party/filter_height_field/filter_height_field.glsl"
-#include "filter_drawing4.glsl"
 #include "../third_party/filter_shapes/filter_shapes.glsl"
 #include "filter_colour_blast.glsl"
 #include "filter_lighting.glsl"
 #include "filter_watercolour_blur.glsl"
+#include "filter_drawing4.glsl"
 
 struct vulkanShaderVars {
     int panel_id;
@@ -73,10 +73,16 @@ layout (set = 0, binding = 2) uniform bufferVals {
     vulkanShaderVars shader_vars;
 } buffer_vals;
 
+
 layout(binding=0) uniform sampler2D sampler2d;
 layout(binding=1) uniform sampler2D prevSampler2d;
+layout(set = 0, binding = 4) uniform sampler2D paintDaubSampler;
+
 layout(location=0) in vec2 tex_coord;
 layout(location=0) out vec4 color;
+
+// Forward declare
+vec4 filterPaintDaubs(vec4 color, vec2 tex_coord, sampler2D daub_texture, int daub_intensity);
 
 /**
  * 1 - Bee eye filter
@@ -120,6 +126,57 @@ void main() {
     if ((buffer_vals.shader_vars.use_filter & 0x08) != 0) { // 0b 0000 1000
         color = filterColourBlast(color, buffer_vals.shader_vars.time_value, buffer_vals.shader_vars.seek_value4);
     }
+
+    // AI
+//    if ((buffer_vals.shader_vars.use_filter & 0x08) != 0) { // 0b 0000 1000
+//        color = filterAIColourBlast(color, tex_coord, buffer_vals.shader_vars.time_value, buffer_vals.shader_vars.seek_value4);
+//    }
+
+// Rotoscoping
+//    if ((buffer_vals.shader_vars.use_filter & 0x04) != 0) { // New bitflag: 0b 0100 0000
+//        color = filterRotoscope(color, sampler2d, tex_coord,
+//                                buffer_vals.shader_vars.width,
+//                                buffer_vals.shader_vars.height,
+//                                buffer_vals.shader_vars.time_value,
+//                                buffer_vals.shader_vars.seek_value3,  // Edge Thickness (0-100)
+//                                buffer_vals.shader_vars.seek_value4,  // Color Levels (2-32, for example)
+//                                buffer_vals.shader_vars.seek_value3); // Temporal Instability (0-100)
+//    }
+
+//     // Paint Daubs (Optional - separate bitflag)
+//    if ((buffer_vals.shader_vars.use_filter & 0x08) != 0) { // New bitflag: 0b 1000 0000
+//        color = filterPaintDaubs(color, tex_coord, paintDaubSampler, buffer_vals.shader_vars.seek_value4);
+//    }
+
+      // Parallax
+//      if ((buffer_vals.shader_vars.use_filter & 0x08) != 0) {
+//          color = filterParallax(sampler2d, tex_coord, buffer_vals.shader_vars.time_value, 0.1, vec2(1.0, 0.0));
+//      }
+     // Normal Map
+//     if ((buffer_vals.shader_vars.use_filter & 0x08) != 0) {
+//         color = filterNormalMap(sampler2d, tex_coord, buffer_vals.shader_vars.width, buffer_vals.shader_vars.height, vec3(1.0, 1.0, 1.0));
+//     }
+
+  //   if ((buffer_vals.shader_vars.use_filter & 0x08) != 0) { // New bitflag: 0b 1000 0000
+
+          // --- Construct the 'extrude_params' value ---
+    //       int color_select = 0;   // 0=Red, 1=Green, 2=Blue, 3 = custom
+    //       int extrude_amount = buffer_vals.shader_vars.seek_value4; // Use seek_value4 for amount (0-100 range is good)
+    //       int direction = 45;     // Example: 45 degrees
+
+             //Clamp values
+    //         extrude_amount = clamp(extrude_amount, 0, 99);
+    //         direction = clamp(direction, 0, 99);
+    //         color_select = clamp(color_select, 0, 3);
+
+    //       int extrude_params = (color_select * 10000) + (extrude_amount * 100) + direction;
+
+    //       color = filterExtrude(sampler2d, tex_coord,
+     //                             buffer_vals.shader_vars.width,
+     //                             buffer_vals.shader_vars.height,
+     //                             extrude_params);
+     //    }
+
 
     // Lighting
     if ((buffer_vals.shader_vars.use_filter & 0x10) != 0) { // 0b 0001 0000

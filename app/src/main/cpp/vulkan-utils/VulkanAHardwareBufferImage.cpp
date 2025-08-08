@@ -191,6 +191,7 @@ bool VulkanAHardwareBufferImage::init(AHardwareBuffer *buffer, bool useExternalF
             .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
             .pNext =
             (mConversion == VK_NULL_HANDLE) ? nullptr : &samplerConversionInfo,
+            .flags = 0,
             .image = mImage,
             .viewType = VK_IMAGE_VIEW_TYPE_2D,
             .format = useExternalFormat ? VK_FORMAT_UNDEFINED : formatInfo.format,
@@ -200,7 +201,6 @@ bool VulkanAHardwareBufferImage::init(AHardwareBuffer *buffer, bool useExternalF
                             VK_COMPONENT_SWIZZLE_IDENTITY, VK_COMPONENT_SWIZZLE_IDENTITY,
                     },
             .subresourceRange = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1},
-            .flags = 0,
     };
     VK_CALL(vkCreateImageView(mInstance->device(), &viewCreateInfo, nullptr, &mView));
 
